@@ -19,18 +19,43 @@ const KIND_ICON: Record<string, typeof File> = { text: FileText, code: Code2, re
 const KIND_TINT: Record<string, string> = { text: 'text-violet-300 bg-violet-500/15', code: 'text-teal-300 bg-teal-400/15', resume: 'text-rose-300 bg-rose-400/15', response: 'text-violet-300 bg-violet-500/15', image: 'text-pink-300 bg-pink-400/15', audio: 'text-sky-300 bg-sky-400/15', video: 'text-indigo-300 bg-indigo-400/15', pdf: 'text-orange-300 bg-orange-400/15', data: 'text-fuchsia-300 bg-fuchsia-400/15', file: 'text-fg-soft bg-white/10' };
 const KINDS = ['all', 'text', 'code', 'resume', 'response', 'image', 'audio', 'video', 'pdf', 'data'];
 
-export const ArtifactDetail = ({ id, onClose, inline }: { id: string; onClose: () => void; inline?: boolean }) => {
+export const ArtifactDetail = ({ id, onClose, inline }: { id: string | any; onClose: () => void; inline?: boolean }) => {
   const qc = useQueryClient();
-  const { data, isLoading, error } = useQuery({ queryKey: ['artifact', id], queryFn: async () => (await api.get(`/artifacts/${id}`)).data.artifact as Artifact });
+  
+  // 1. Safeguard: Extract the ID string if an object was accidentally passed
+  const actualId = typeof id === 'object' && id !== null ? id.id : id;
+
+  // 2. Use actualId in the query and add 'enabled' to prevent fetching if actualId is undefined
+  const { data, isLoading, error } = useQuery({ 
+    queryKey: ['artifact', actualId], 
+    queryFn: async () => (await api.get(`/artifacts/${actualId}`)).data.artifact as Artifact,
+    enabled: !!actualId 
+  });
+
   const [title, setTitle] = useState('');
   const [editing, setEditing] = useState(false);
   useEffect(() => { if (data) setTitle(data.title); }, [data]);
-  const setA = (a: Artifact) => { qc.setQueryData(['artifact', id], a); qc.invalidateQueries({ queryKey: ['artifacts'] }); };
+  
+  // 3. Use actualId in setA
+  const setA = (a: Artifact) => { 
+    qc.setQueryData(['artifact', actualId], a); 
+    qc.invalidateQueries({ queryKey: ['artifacts'] }); 
+  };
+
   const saveTitle = async () => {
     if (!data || !title.trim() || title === data.title) { setEditing(false); return; }
-    try { const r = await api.patch(`/artifacts/${id}`, { title }); setA(r.data.artifact); toast.success('Renamed'); } catch (e) { toast.error('Could not rename', errorMessage(e)); setTitle(data.title); }
+    try { 
+      // 4. Use actualId in the patch request
+      const r = await api.patch(`/artifacts/${actualId}`, { title }); 
+      setA(r.data.artifact); 
+      toast.success('Renamed'); 
+    } catch (e) { 
+      toast.error('Could not rename', errorMessage(e)); 
+      setTitle(data.title); 
+    }
     setEditing(false);
   };
+  
   return (
     <div>
       <div className="mb-5 flex items-center gap-3">
@@ -48,6 +73,8 @@ export const ArtifactDetail = ({ id, onClose, inline }: { id: string; onClose: (
     </div>
   );
 };
+
+
 
 export default function Workspace() {
   const [sp, setSp] = useSearchParams();

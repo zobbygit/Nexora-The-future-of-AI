@@ -227,7 +227,12 @@ export const shareArtifact = asyncHandler(async (req, res) => {
 });
 
 const collabDto = (c: any, user?: any) => ({
-  id: String(c._id), artifactId: String(c.artifactId), permission: c.permission, canDownload: c.canDownload, createdAt: c.createdAt,
+  id: String(c._id), 
+  // Check if artifactId is populated (an object) or a plain ID, and extract the string ID
+  artifactId: String(c.artifactId?._id || c.artifactId), 
+  permission: c.permission, 
+  canDownload: c.canDownload, 
+  createdAt: c.createdAt,
   user: user ? { id: String(user._id), name: user.name, email: user.email, avatarUrl: user.avatarUrl } : undefined,
 });
 
