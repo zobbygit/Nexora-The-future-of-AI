@@ -25,17 +25,49 @@ export const ResultActions = ({ artifact, onDeleted, onChange, compact }: { arti
   const pdf = useMutation({ mutationFn: async () => (await api.get(`/artifacts/${artifact.id}/export/pdf`, { responseType: 'blob' })).data as Blob, onSuccess: (b) => { downloadBlob(b, `${slug(artifact.title)}.pdf`); done(); }, onError: () => toast.error('PDF export failed', 'Please try again.') });
 
   const done = () => { void api.post(`/artifacts/${artifact.id}/downloaded`).catch(() => undefined); };
-  const download = async () => {
-    try {
-      if (artifact.content && TEXTY.includes(artifact.kind)) { downloadText(artifact.content, `${slug(artifact.title)}.md`, 'text/markdown'); return done(); }
-      if (artifact.kind === 'data') { downloadText(artifact.content || '{}', `${slug(artifact.title)}.json`, 'application/json'); return done(); }
-      const res = await fetch(fileUrl(artifact.url), { credentials: 'include' });
-      if (!res.ok) throw new Error();
-      const ext = (artifact.mimeType || '').split('/')[1]?.replace('svg+xml', 'svg').replace('mpeg', 'mp3').replace('jpeg', 'jpg') || 'bin';
-      downloadBlob(await res.blob(), `${slug(artifact.title)}.${ext}`);
-      done();
-    } catch { toast.error('Download failed', 'Please try again.'); }
-  };
+const download = async () => {
+  try {
+    if (artifact.content && TEXTY.includes(artifact.kind)) {
+      downloadText(
+        artifact.content,
+        `${slug(artifact.title)}.md`,
+        'text/markdown'
+      );
+      return done();
+    }
+
+    if (artifact.kind === 'data') {
+      downloadText(
+        artifact.content || '{}',
+        `${slug(artifact.title)}.json`,
+        'application/json'
+      );
+      return done();
+    }
+
+    // Cloudinary file — do NOT send credentials
+    const res = await fetch(fileUrl(artifact.url));
+
+    if (!res.ok) throw new Error();
+
+    const ext =
+      (artifact.mimeType || '')
+        .split('/')[1]
+        ?.replace('svg+xml', 'svg')
+        .replace('mpeg', 'mp3')
+        .replace('jpeg', 'jpg') || 'bin';
+
+    downloadBlob(
+      await res.blob(),
+      `${slug(artifact.title)}.${ext}`
+    );
+
+    done();
+  } catch {
+    toast.error('Download failed', 'Please try again.');
+  }
+};
+
   const canCopy = !!artifact.content && (TEXTY.includes(artifact.kind));
   const pdfAble = !!artifact.content && [...TEXTY, 'data'].includes(artifact.kind);
   const sz = compact ? 'sm' : 'md';
