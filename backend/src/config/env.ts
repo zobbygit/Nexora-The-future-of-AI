@@ -81,6 +81,6 @@ export const configWarnings = (): string[] => {
   if (isProd && /localhost|127\.0\.0\.1/.test(env.CLIENT_URL)) w.push('CLIENT_URL still points at localhost — browsers on your real frontend will be blocked by CORS.');
   if (isProd && !(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET)) w.push('Cloudinary is not configured — uploaded/generated files are stored on Render\'s ephemeral disk and will be lost on every deploy/restart.');
   if (env.STRIPE_SECRET_KEY && !env.STRIPE_WEBHOOK_SECRET) w.push('STRIPE_WEBHOOK_SECRET is missing — payments will succeed but plans will only update through the billing sync fallback.');
-  if (isProd && env.COOKIE_SAMESITE === 'none' && !env.CLIENT_URL.startsWith('https')) w.push('SameSite=None cookies require https on both sides.');
+  if (isProd && env.COOKIE_SAMESITE && env.COOKIE_SAMESITE !== 'none' && !env.COOKIE_DOMAIN) w.push(`COOKIE_SAMESITE=${env.COOKIE_SAMESITE} is ignored because COOKIE_DOMAIN is empty — cross-site apps need SameSite=None, which is being used instead. Clear COOKIE_SAMESITE.`);
   return w;
 };

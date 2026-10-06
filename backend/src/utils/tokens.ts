@@ -13,15 +13,21 @@ export interface AccessPayload {
 export const COOKIES = { access: 'nx_at', refresh: 'nx_rt', admin: 'nx_admin' } as const;
 
 /**
- * Cookie attributes.
- * - Different sites (app on vercel.app, API on onrender.com): SameSite=None; Secure  (default in production)
- * - Same registrable domain (app.example.com + api.example.com): set COOKIE_DOMAIN=.example.com and
- *   COOKIE_SAMESITE=lax — these are first-party cookies, which no browser blocks.
+ * SameSite policy. When the app (e.g. localhost or vercel.app) and the API (onrender.com) are different sites,
+ * the browser only attaches the cookie to API calls if it is SameSite=None; Secure. "lax" would make every
+ * request after login come back 401 — so in production "lax"/"strict" are honoured ONLY when COOKIE_DOMAIN
+ * is set (i.e. app and API genuinely share a registrable domain). Otherwise we force "none".
  */
+export const resolveSameSite = (prod: boolean, cookieDomain: string, configured: string): 'none' | 'lax' | 'strict' => {
+  if (!prod) return (configured as 'none' | 'lax' | 'strict') || 'lax';
+  if (!cookieDomain) return 'none';
+  return (configured as 'none' | 'lax' | 'strict') || 'lax';
+};
+
 const base = (): CookieOptions => ({
   httpOnly: true,
   secure: isProd,
-  sameSite: (env.COOKIE_SAMESITE || (isProd ? 'none' : 'lax')) as 'none' | 'lax' | 'strict',
+  sameSite: resolveSameSite(isProd, env.COOKIE_DOMAIN, env.COOKIE_SAMESITE),
   ...(env.COOKIE_DOMAIN ? { domain: env.COOKIE_DOMAIN } : {}),
 });
 
