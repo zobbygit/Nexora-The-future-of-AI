@@ -1,0 +1,10 @@
+process.env.NODE_ENV = 'test';
+process.env.AI_MOCK = 'false';
+process.env.ADMIN_EMAIL = 'admin@test.dev';
+process.env.ADMIN_PASSWORD = 'Admin-Test-Pass-1';
+process.env.STRIPE_SECRET_KEY = 'sk_test_dummy';
+process.env.STRIPE_WEBHOOK_SECRET = 'whsec_testsecret';
+process.env.STRIPE_PRO_PRICE_ID = 'price_test';
+process.env.JWT_ACCESS_SECRET = 'test-access-secret-0123456789abcdef';
+process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-0123456789abcdef';
+process.env.CLIENT_URL = 'http://localhost:5173';

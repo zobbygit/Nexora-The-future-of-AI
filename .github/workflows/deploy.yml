@@ -1,0 +1,38 @@
+name: Deploy
+
+# Runs only after CI succeeds on main. Render and Vercel both support Git-based deploys; these hooks
+# make the release explicit and gated behind green tests.
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  api:
+    name: Deploy API → Render
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        run: |
+          test -n "$RENDER_DEPLOY_HOOK" || { echo "RENDER_DEPLOY_HOOK secret is not set"; exit 1; }
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK"
+        env: { RENDER_DEPLOY_HOOK: "${{ secrets.RENDER_DEPLOY_HOOK }}" }
+
+  web:
+    name: Deploy web → Vercel
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: frontend } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i -g vercel@latest
+      - run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env: { VERCEL_ORG_ID: "${{ secrets.VERCEL_ORG_ID }}", VERCEL_PROJECT_ID: "${{ secrets.VERCEL_PROJECT_ID }}" }
+      - run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env: { VERCEL_ORG_ID: "${{ secrets.VERCEL_ORG_ID }}", VERCEL_PROJECT_ID: "${{ secrets.VERCEL_PROJECT_ID }}" }
+      - run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env: { VERCEL_ORG_ID: "${{ secrets.VERCEL_ORG_ID }}", VERCEL_PROJECT_ID: "${{ secrets.VERCEL_PROJECT_ID }}" }

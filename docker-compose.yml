@@ -1,0 +1,21 @@
+# Local development database + optional containers.   docker compose up -d mongo
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports: ["27017:27017"]
+    volumes: [mongo-data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  api:
+    profiles: [full]
+    build: ./backend
+    env_file: ./backend/.env
+    environment: { MONGODB_URI: "mongodb://mongo:27017/nexora", NODE_ENV: development }
+    ports: ["5000:5000"]
+    depends_on: { mongo: { condition: service_healthy } }
+volumes:
+  mongo-data:

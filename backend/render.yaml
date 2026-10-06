@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: nexora-api
+    runtime: node
+    rootDir: backend
+    plan: starter
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: false   # deploys are triggered by the GitHub Actions workflow
+    envVars:
+      - { key: NODE_ENV, value: production }
+      - { key: NODE_VERSION, value: "22" }
+      - { key: COOKIE_DOMAIN, sync: false }
+      - { key: COOKIE_SAMESITE, sync: false }
+      - { key: CLIENT_URL, sync: false }
+      - { key: MONGODB_URI, sync: false }
+      - { key: JWT_ACCESS_SECRET, generateValue: true }
+      - { key: JWT_REFRESH_SECRET, generateValue: true }
+      - { key: ADMIN_EMAIL, sync: false }
+      - { key: ADMIN_PASSWORD, sync: false }
+      - { key: OPENROUTER_API_KEY, sync: false }
+      - { key: GROQ_API_KEY, sync: false }
+      - { key: HF_API_TOKEN, sync: false }
+      - { key: CLOUDFLARE_ACCOUNT_ID, sync: false }
+      - { key: CLOUDFLARE_API_TOKEN, sync: false }
+      - { key: CLIPDROP_API_KEY, sync: false }
+      - { key: STRIPE_SECRET_KEY, sync: false }
+      - { key: STRIPE_PUBLISHABLE_KEY, sync: false }
+      - { key: STRIPE_WEBHOOK_SECRET, sync: false }
+      - { key: STRIPE_PRO_PRICE_ID, sync: false }
+      - { key: CLOUDINARY_CLOUD_NAME, sync: false }
+      - { key: CLOUDINARY_API_KEY, sync: false }
+      - { key: CLOUDINARY_API_SECRET, sync: false }

@@ -1,0 +1,14 @@
+{
+  "name": "nexora",
+  "private": true,
+  "description": "Nexora — all-in-one AI workspace",
+  "scripts": {
+    "install:all": "npm --prefix backend ci && npm --prefix frontend ci",
+    "dev:api": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix frontend run dev",
+    "test": "npm --prefix backend test && npm --prefix frontend test",
+    "lint": "npm --prefix backend run lint && npm --prefix frontend run lint",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "stripe:setup": "npm --prefix backend run stripe:setup"
+  }
+}
