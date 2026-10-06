@@ -28,7 +28,7 @@ export const artifactDto = (a: any, role: Access['role'] = 'owner', canDownload 
   tool: a.tool,
   mimeType: a.mimeType,
   content: a.content,
-  url: a.url,
+  url: a.url ? String(a.url) : undefined,
   size: a.size,
   meta: a.meta,
   favorite: a.favorite,

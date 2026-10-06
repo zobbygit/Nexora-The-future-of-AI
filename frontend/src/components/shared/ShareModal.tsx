@@ -30,7 +30,10 @@ export const ShareModal = ({ artifactId, title, open, onClose }: { artifactId: s
           {!!suggestions?.length && <div className="glass-strong absolute inset-x-0 top-12 z-10 rounded-2xl p-1.5">{suggestions.map((u) => <button type="button" key={u.id} onClick={() => setIdent(u.email)} className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left hover:bg-white/[0.07]"><Avatar name={u.name} url={u.avatarUrl} size={28} /><span className="min-w-0"><span className="block truncate text-sm font-semibold">{u.name}</span><span className="block truncate text-xs text-fg-mute">{u.email}</span></span></button>)}</div>}
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Select value={perm} onChange={(e) => setPerm(e.target.value as any)} className="!w-auto" aria-label="Permission"><option value="viewer">Viewer — can read</option><option value="editor">Editor — can edit</option></Select>
+     <Select value={perm} onChange={(e) => setPerm(e.target.value as any)} className="!w-auto" aria-label="Permission">
+  <option value="viewer" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Viewer — can read</option>
+  <option value="editor" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Editor — can edit</option>
+</Select>
           {perm === 'viewer' && <label className="flex items-center gap-2 text-sm text-fg-soft"><input type="checkbox" checked={canDl} onChange={(e) => setCanDl(e.target.checked)} className="accent-violet-500" />Allow download</label>}
           <Button type="submit" className="ml-auto" loading={add.isPending} disabled={ident.trim().length < 2}>Share</Button>
         </div>

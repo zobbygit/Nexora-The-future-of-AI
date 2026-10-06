@@ -35,7 +35,10 @@ export default function Collaboration() {
             <Avatar name={r.user?.name} url={r.user?.avatarUrl} size={44} />
             <div className="min-w-0 flex-1"><Link to={`/app/workspace?artifact=${r.artifactId}&scope=shared`} className="block truncate font-bold transition hover:text-violet-300">{r.artifact?.title}</Link><p className="truncate text-xs text-fg-mute">{tab === 'with' ? 'From' : 'With'} {r.user?.name} · {r.user?.email} · {timeAgo(r.createdAt)}</p></div>
             {tab === 'by' ? (<>
-              <Select value={r.permission} onChange={(e) => update.mutate({ id: r.id, permission: e.target.value })} className="!w-auto !py-2 text-sm" aria-label={`Permission for ${r.user?.name}`}><option value="viewer">Viewer</option><option value="editor">Editor</option></Select>
+     <Select value={r.permission} onChange={(e) => update.mutate({ id: r.id, permission: e.target.value })} className="!w-auto !py-2 text-sm" aria-label={`Permission for ${r.user?.name}`}>
+  <option value="viewer" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Viewer</option>
+  <option value="editor" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Editor</option>
+</Select>
               <Button size="sm" variant="secondary" onClick={() => setShare(r)}><Share2 className="h-4 w-4" />Manage</Button>
               <Button size="icon" variant="ghost" className="hover:!text-bad" onClick={() => revoke.mutate(r.id)} aria-label="Revoke access"><Trash2 className="h-4 w-4" /></Button></>) : (<>
               <Badge tone={r.permission === 'editor' ? 'info' : 'neutral'}>{r.permission === 'editor' ? 'Can edit' : r.canDownload ? 'View & download' : 'View only'}</Badge>

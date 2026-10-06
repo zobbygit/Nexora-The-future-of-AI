@@ -35,10 +35,33 @@ export function Writer() {
             <Field label="What should I write?"><Textarea value={f.prompt} onChange={(e) => set('prompt', e.target.value)} placeholder="e.g. A launch announcement for our new analytics dashboard, aimed at product teams…" maxLength={6000} className="min-h-[150px]" /></Field>
             <div><p className="mb-2 text-[13px] font-semibold text-fg-soft">Writing type</p><div className="flex flex-wrap gap-2">{TYPES.map(([id, label]) => <button key={id} onClick={() => set('writingType', id)} aria-pressed={f.writingType === id} className={cn('rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition', f.writingType === id ? 'border-violet-400/70 bg-violet-500/20 text-white' : 'border-white/10 text-fg-mute hover:border-white/25 hover:text-fg')}>{label}</button>)}</div></div>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Tone"><Select value={f.tone} onChange={(e) => set('tone', e.target.value)}>{['professional', 'friendly', 'persuasive', 'casual', 'formal', 'witty'].map((t) => <option key={t} value={t}>{t[0].toUpperCase() + t.slice(1)}</option>)}</Select></Field>
-              <Field label="Length"><Select value={f.length} onChange={(e) => set('length', e.target.value)}><option value="short">Short</option><option value="medium">Medium</option><option value="long">Long</option></Select></Field>
+
+
+             <Field label="Tone">
+  <Select value={f.tone} onChange={(e) => set('tone', e.target.value)}>
+    {['professional', 'friendly', 'persuasive', 'casual', 'formal', 'witty'].map((t) => (
+      <option key={t} value={t} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+        {t[0].toUpperCase() + t.slice(1)}
+      </option>
+    ))}
+  </Select>
+</Field>
+<Field label="Length">
+  <Select value={f.length} onChange={(e) => set('length', e.target.value)}>
+    <option value="short" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Short</option>
+    <option value="medium" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Medium</option>
+    <option value="long" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Long</option>
+  </Select>
+</Field>
             </div>
-            <Field label="Language"><Select value={f.language} onChange={(e) => set('language', e.target.value)}>{['English', 'Hindi', 'Bengali', 'Spanish', 'French', 'German', 'Portuguese', 'Japanese'].map((l) => <option key={l}>{l}</option>)}</Select></Field>
+       <Field label="Language">
+  <Select value={f.language} onChange={(e) => set('language', e.target.value)}>
+    {['English', 'Hindi', 'Bengali', 'Spanish', 'French', 'German', 'Portuguese', 'Japanese'].map((l) => (
+      <option key={l} value={l} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>{l}</option>
+    ))}
+  </Select>
+</Field>
+
             <Button size="lg" className="w-full" onClick={submit} loading={r.running}><Sparkles className="h-4 w-4" />{r.state === 'done' ? 'Regenerate' : 'Generate'} · {r.credits} credits</Button>
           </div>
           <RecentRuns tool="writer" />
@@ -87,7 +110,17 @@ export function Resume() {
           <div className="surface space-y-4 p-5">
             <Field label="Target role"><Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Software Engineer" /></Field>
             <Field label="Job description (optional)" hint="Used to tailor the wording."><Textarea className="min-h-[80px]" value={jd} onChange={(e) => setJd(e.target.value)} /></Field>
-            <div className="grid grid-cols-2 gap-3"><Field label="Format"><Select value={style} onChange={(e) => setStyle(e.target.value)}><option value="modern">Modern</option><option value="classic">Classic</option><option value="minimal">Minimal</option></Select></Field><label className="mt-6 flex items-center gap-2 text-sm text-fg-soft"><input type="checkbox" checked={improve} onChange={(e) => setImprove(e.target.checked)} className="accent-violet-500" />AI improvement</label></div>
+            <div className="grid grid-cols-2 gap-3">
+              
+<Field label="Format">
+  <Select value={style} onChange={(e) => setStyle(e.target.value)}>
+    <option value="modern" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Modern</option>
+    <option value="classic" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Classic</option>
+    <option value="minimal" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Minimal</option>
+  </Select>
+</Field>
+              
+              <label className="mt-6 flex items-center gap-2 text-sm text-fg-soft"><input type="checkbox" checked={improve} onChange={(e) => setImprove(e.target.checked)} className="accent-violet-500" />AI improvement</label></div>
             <Button size="lg" className="w-full" onClick={submit} loading={r.running}><Wand2 className="h-4 w-4" />Create {mode === 'resume' ? 'resume' : 'cover letter'} · {r.credits} credits</Button>
           </div>
           <RecentRuns tool="resume" />
@@ -150,7 +183,16 @@ export function Agent() {
         <div className="space-y-4">
           <div className="surface space-y-4 p-5 sm:p-6">
             <Field label="Your goal"><Textarea className="min-h-[150px]" value={goal} onChange={(e) => setGoal(e.target.value)} placeholder="e.g. Summarise the attached report and draft three follow-up questions for the team." maxLength={3000} /></Field>
-            <Field label="Attach a PDF (optional)" hint={docs?.length ? undefined : 'Upload one in PDF AI first.'}><Select value={doc} onChange={(e) => setDoc(e.target.value)}><option value="">No document</option>{docs?.filter((d) => d.status === 'ready').map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}</Select></Field>
+          <Field label="Attach a PDF (optional)" hint={docs?.length ? undefined : 'Upload one in PDF AI first.'}>
+  <Select value={doc} onChange={(e) => setDoc(e.target.value)}>
+    <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>No document</option>
+    {docs?.filter((d) => d.status === 'ready').map((d) => (
+      <option key={d.id} value={d.id} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+        {d.name}
+      </option>
+    ))}
+  </Select>
+</Field>
             <Button size="lg" className="w-full" onClick={submit} loading={r.running}><Bot className="h-4 w-4" />Run agent · {r.credits} credits</Button>
           </div>
           <RecentRuns tool="agent" />

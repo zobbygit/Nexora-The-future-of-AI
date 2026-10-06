@@ -85,8 +85,17 @@ export default function Workspace() {
       </div>
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <div className="relative min-w-[220px] flex-1 sm:max-w-sm"><Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-mute" /><Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by title…" className="pl-10" aria-label="Search workspace" />{q && <button onClick={() => setQ('')} aria-label="Clear search" className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-mute hover:text-fg"><X className="h-4 w-4" /></button>}</div>
-        <Select value={kind} onChange={(e) => { setKind(e.target.value); setPage(1); }} className="!w-auto capitalize" aria-label="Category">{KINDS.map((k) => <option key={k} value={k}>{k === 'all' ? 'All categories' : k}</option>)}</Select>
-        <Select value={sort} onChange={(e) => setSort(e.target.value)} className="!w-auto" aria-label="Sort"><option value="recent">Most recent</option><option value="name">Name</option></Select>
+     <Select value={kind} onChange={(e) => { setKind(e.target.value); setPage(1); }} className="!w-auto capitalize" aria-label="Category">
+  {KINDS.map((k) => (
+    <option key={k} value={k} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+      {k === 'all' ? 'All categories' : k}
+    </option>
+  ))}
+</Select>
+   <Select value={sort} onChange={(e) => setSort(e.target.value)} className="!w-auto" aria-label="Sort">
+  <option value="recent" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Most recent</option>
+  <option value="name" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Name</option>
+</Select>
         <div className="ml-auto flex rounded-xl border border-line p-1">{([['grid', LayoutGrid], ['list', List]] as const).map(([v, I]) => <button key={v} onClick={() => setView(v)} aria-label={`${v} view`} aria-pressed={view === v} className={cn('grid h-8 w-8 place-items-center rounded-lg transition', view === v ? 'bg-violet-600 text-white' : 'text-fg-mute hover:text-fg')}><I className="h-4 w-4" /></button>)}</div>
       </div>
       {error ? <ErrorState message={errorMessage(error)} onRetry={() => refetch()} /> : isLoading ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 6 }, (_, i) => <Skeleton key={i} className="h-44" />)}</div> : !data?.items.length ? (
@@ -99,7 +108,12 @@ export default function Workspace() {
                 <motion.button layout key={a.id} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} whileHover={{ y: -4 }} onClick={() => { const n = new URLSearchParams(sp); n.set('artifact', a.id); if (scope === 'shared') n.set('scope', 'shared'); setSp(n); }}
                   className={cn('surface group text-left transition-colors hover:border-violet-400/30', view === 'grid' ? 'flex flex-col overflow-hidden' : 'flex items-center gap-4 p-3')}>
                   <div className={cn('relative grid shrink-0 place-items-center overflow-hidden', view === 'grid' ? 'h-36 w-full' : 'h-14 w-14 rounded-xl', KIND_TINT[a.kind])}>
-                    {isImg ? <img src={fileUrl(a.url)} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /> : <I className={view === 'grid' ? 'h-10 w-10' : 'h-6 w-6'} />}
+                 // In Workspace.tsx inside the mapping function
+{isImg && typeof a.url === 'string' ? (
+  <img src={fileUrl(a.url)} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+) : (
+  <I className={view === 'grid' ? 'h-10 w-10' : 'h-6 w-6'} />
+)}
                     {a.favorite && <Heart className="absolute right-2.5 top-2.5 h-4 w-4 fill-rose-400 text-rose-400 drop-shadow" />}
                   </div>
                   <div className={cn('min-w-0', view === 'grid' ? 'p-4' : 'flex-1')}><p className="truncate font-bold">{a.title}</p><p className="mt-0.5 text-xs capitalize text-fg-mute">{a.kind}{a.tool ? ` · ${toolName(a.tool)}` : ''} · {timeAgo(a.updatedAt)}{a.role !== 'owner' && ` · ${a.role}`}</p></div>

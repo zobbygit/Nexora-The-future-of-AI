@@ -91,7 +91,19 @@ export function SpeechToText() {
                 <p className="mt-4 font-mono text-2xl font-bold">{fmtTime(secs)}</p><p className="mt-1 text-xs text-fg-mute">{rec ? 'Recording… tap to stop' : file ? 'Recording ready — review below' : 'Tap to start recording'}</p>
                 {file && !rec && <audio className="mt-4 w-full" controls src={URL.createObjectURL(file)} />}
               </div>)}
-            <Field label="Spoken language" hint="Leave on Auto-detect unless results look off."><Select value={lang} onChange={(e) => setLang(e.target.value)}><option value="">Auto-detect</option><option value="en">English</option><option value="hi">Hindi</option><option value="bn">Bengali</option><option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option></Select></Field>
+
+           <Field label="Spoken language" hint="Leave on Auto-detect unless results look off.">
+  <Select value={lang} onChange={(e) => setLang(e.target.value)}>
+    <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Auto-detect</option>
+    <option value="en" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>English</option>
+    <option value="hi" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Hindi</option>
+    <option value="bn" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Bengali</option>
+    <option value="es" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Spanish</option>
+    <option value="fr" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>French</option>
+    <option value="de" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>German</option>
+  </Select>
+</Field>
+
             <Button size="lg" className="w-full" disabled={!file || rec} onClick={() => file && r.run('/tools/stt', formOf(file, { language: lang }))} loading={r.running}><Mic className="h-4 w-4" />Transcribe · {r.credits} credits</Button>
           </div>
           <RecentRuns tool="stt" />
@@ -146,7 +158,13 @@ export function ImageToText() {
           <div className="surface space-y-5 p-5 sm:p-6">
             <Tabs tabs={[{ id: 'file', label: 'Upload' }, { id: 'url', label: 'From URL' }]} value={src} onChange={setSrc} />
             {src === 'file' ? <FileDrop accept="image/png,image/jpeg,image/webp" file={file} onFile={setFile} hint="PNG, JPG or WebP · up to 8 MB" preview="image" /> : <Field label="Image URL" hint="Must be a public http(s) image."><div className="relative"><Link2 className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-mute" /><Input className="pl-10" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…/receipt.png" /></div></Field>}
-            <Field label="Mode"><Select value={mode} onChange={(e) => setMode(e.target.value)}><option value="extract">Extract text (OCR)</option><option value="describe">Describe the image</option></Select></Field>
+
+         <Field label="Mode">
+  <Select value={mode} onChange={(e) => setMode(e.target.value)}>
+    <option value="extract" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Extract text (OCR)</option>
+    <option value="describe" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Describe the image</option>
+  </Select>
+</Field>
             <Button size="lg" className="w-full" disabled={src === 'file' ? !file : !url} onClick={go} loading={r.running}><ScanText className="h-4 w-4" />{mode === 'extract' ? 'Extract text' : 'Describe'} · {r.credits} credits</Button>
           </div>
           <RecentRuns tool="image-to-text" />
@@ -214,7 +232,17 @@ export function TextToImage() {
           <div className="surface space-y-5 p-5 sm:p-6">
             <Field label="Prompt"><Textarea className="min-h-[130px]" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="A quiet futuristic workspace at dusk, soft violet light, cinematic…" maxLength={1500} /></Field>
             <div><p className="mb-2 text-[13px] font-semibold text-fg-soft">Aspect ratio</p><div className="grid grid-cols-5 gap-2">{RATIOS.map(([id, l, sz]) => <button key={id} onClick={() => setRatio(id)} aria-pressed={ratio === id} aria-label={`${l} ${id}`} className={cn('flex flex-col items-center gap-2 rounded-xl border py-3 text-[11px] font-bold transition', ratio === id ? 'border-violet-400/70 bg-violet-500/20 text-white' : 'border-white/10 text-fg-mute hover:text-fg')}><span className={cn('rounded-md border-2 border-current', sz)} />{id}</button>)}</div></div>
-            <Field label="Style"><Select value={style} onChange={(e) => setStyle(e.target.value)}>{STYLES.map((s) => <option key={s} value={s}>{s === 'none' ? 'None' : s === '3d' ? '3D render' : s[0].toUpperCase() + s.slice(1)}</option>)}</Select></Field>
+
+
+     <Field label="Style">
+  <Select value={style} onChange={(e) => setStyle(e.target.value)}>
+    {STYLES.map((s) => (
+      <option key={s} value={s} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+        {s === 'none' ? 'None' : s === '3d' ? '3D render' : s[0].toUpperCase() + s.slice(1)}
+      </option>
+    ))}
+  </Select>
+</Field>
             <Field label="Avoid (optional)"><Input value={negative} onChange={(e) => setNegative(e.target.value)} placeholder="text, watermark, blur" maxLength={300} /></Field>
             <Button size="lg" className="w-full" onClick={go} loading={r.running}><ImagePlus className="h-4 w-4" />{r.state === 'done' ? 'Regenerate' : 'Generate'} · {r.credits} credits</Button>
           </div>
