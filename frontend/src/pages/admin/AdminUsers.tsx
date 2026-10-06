@@ -25,8 +25,16 @@ export function AdminUsers() {
       <PageHeader title="Users" eyebrow="Admin" subtitle={`${data?.total ?? '–'} accounts. Search, filter and open any user.`} />
       <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_160px_160px]">
         <Input placeholder="Search name, email or phone…" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} aria-label="Search users" />
-        <Select value={f.plan} onChange={(e) => { setF({ ...f, plan: e.target.value }); setPage(1); }} aria-label="Plan"><option value="">All plans</option><option value="free">Free</option><option value="pro">Pro</option></Select>
-        <Select value={f.status} onChange={(e) => { setF({ ...f, status: e.target.value }); setPage(1); }} aria-label="Status"><option value="">Any status</option><option value="active">Active</option><option value="inactive">Deactivated</option></Select>
+   <Select value={f.plan} onChange={(e) => { setF({ ...f, plan: e.target.value }); setPage(1); }} aria-label="Plan">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>All plans</option>
+  <option value="free" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Free</option>
+  <option value="pro" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Pro</option>
+</Select>
+<Select value={f.status} onChange={(e) => { setF({ ...f, status: e.target.value }); setPage(1); }} aria-label="Status">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Any status</option>
+  <option value="active" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Active</option>
+  <option value="inactive" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Deactivated</option>
+</Select>
       </div>
       <div className={isFetching ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
         <DataTable loading={isLoading} onRow={(i) => nav(`/admin/users/${data.items[i].id}`)} head={['User', 'Plan', 'Credits', 'Status', 'Joined', 'Last active']}

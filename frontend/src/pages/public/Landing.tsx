@@ -13,6 +13,7 @@ import { Modal } from '@/components/ui/primitives';
 import { CATEGORIES, TOOL_META } from '@/lib/tools';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/store/auth';
+import LegalModals from '@/components/brand/LegalModals';
 
 const NAV = [['Features', 'features'], ['AI Tools', 'tools'], ['Pricing', 'pricing'], ['Testimonials', 'testimonials'], ['FAQ', 'faq']] as const;
 const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -87,6 +88,8 @@ const Hero = ({ onDemo }: { onDemo: () => void }) => {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85 }} className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg"><Link to="/register">Get Started Free <ArrowRight className="h-4 w-4" /></Link></Button>
           <Button size="lg" variant="secondary" onClick={onDemo}><span className="grid h-6 w-6 place-items-center rounded-full bg-white/15"><Play className="h-3 w-3 fill-current" /></span>Watch Demo</Button>
+
+          
         </motion.div>
 
         <div className="relative mt-4 h-[380px] w-full max-w-4xl sm:h-[470px]">
@@ -371,7 +374,14 @@ const Footer = () => (
       </div>
       <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-line pt-6 text-xs text-fg-faint sm:flex-row">
         <p>© {new Date().getFullYear()} Nexora. All rights reserved.</p>
-        <div className="flex items-center gap-5"><span>Legal</span><span>Privacy</span><span>Terms</span><Link to="/admin/login" className="opacity-50 transition hover:opacity-100">Admin Login</Link></div>
+
+        <div className="flex items-center gap-5">
+          
+          {/* <span>Legal</span><span>Privacy</span><span>Terms</span> */}
+          <LegalModals/>
+        
+        <Link to="/admin/login" className="opacity-290 transition hover:opacity-100">Admin Login</Link></div>
+
       </div>
     </div>
   </footer>

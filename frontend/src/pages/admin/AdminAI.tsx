@@ -46,9 +46,31 @@ export default function AdminAI() {
         <div><p className="mb-3 text-[17px] font-bold">Tool usage</p><DataTable loading={ov.isLoading} head={['Tool', 'Generations', 'Failed', 'Credits', 'Avg latency']} rows={(d?.tools || []).map((t: any) => [toolName(t.tool), t.count, t.failed || '—', t.credits, `${t.avgLatencyMs} ms`])} empty="No generations yet." /></div></>)}
       {tab === 'generations' && (<>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5"><Input placeholder="Search title…" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} aria-label="Search" />
-          <Select value={f.tool} onChange={(e) => { setF({ ...f, tool: e.target.value }); setPage(1); }} aria-label="Tool"><option value="">All tools</option>{TOOL_META.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>
-          <Select value={f.status} onChange={(e) => { setF({ ...f, status: e.target.value }); setPage(1); }} aria-label="Status"><option value="">Any status</option><option value="completed">Completed</option><option value="failed">Failed</option></Select>
-          <Select value={f.provider} onChange={(e) => { setF({ ...f, provider: e.target.value }); setPage(1); }} aria-label="Provider"><option value="">All providers</option>{['openrouter', 'groq', 'huggingface', 'cloudflare', 'clipdrop'].map((p) => <option key={p} value={p}>{p}</option>)}</Select>
+<Select value={f.tool} onChange={(e) => { setF({ ...f, tool: e.target.value }); setPage(1); }} aria-label="Tool">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>All tools</option>
+  {TOOL_META.map((t) => (
+    <option key={t.id} value={t.id} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+      {t.name}
+    </option>
+  ))}
+</Select>
+
+<Select value={f.status} onChange={(e) => { setF({ ...f, status: e.target.value }); setPage(1); }} aria-label="Status">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Any status</option>
+  <option value="completed" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Completed</option>
+  <option value="failed" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Failed</option>
+</Select>
+
+<Select value={f.provider} onChange={(e) => { setF({ ...f, provider: e.target.value }); setPage(1); }} aria-label="Provider">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>All providers</option>
+  {['openrouter', 'groq', 'huggingface', 'cloudflare', 'clipdrop'].map((p) => (
+    <option key={p} value={p} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+      {p}
+    </option>
+  ))}
+</Select>
+
+
           <label className="flex items-center gap-2 text-sm text-fg-soft"><input type="checkbox" checked={f.fallback} onChange={(e) => { setF({ ...f, fallback: e.target.checked }); setPage(1); }} className="accent-violet-500" />Fallback used</label></div>
         <DataTable loading={gens.isLoading} onRow={(i) => setSel(gens.data.items[i])} head={['Tool', 'Title', 'User', 'Provider', 'Status', 'Latency', 'When']} rows={(gens.data?.items || []).map((g: any) => [toolName(g.tool), <span key="t" className="block max-w-[220px] truncate">{g.title}</span>, g.user?.name || '—', <span key="p" className="capitalize">{g.provider || '—'}{g.fallbackUsed && ' ↩'}</span>, <Badge key="s" tone={g.status === 'completed' ? 'ok' : 'bad'}>{g.status}</Badge>, g.latency ? `${g.latency}ms` : '—', timeAgo(g.createdAt)])} />
         <Pagination page={page} pages={gens.data?.pages || 1} onChange={setPage} /></>)}

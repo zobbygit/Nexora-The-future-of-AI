@@ -35,8 +35,19 @@ export default function HistoryPage() {
         actions={<><Button variant="secondary" onClick={() => exp.mutate('pdf')} loading={exp.isPending && exp.variables === 'pdf'}><FileDown className="h-4 w-4" />Export PDF</Button><Button variant="secondary" onClick={() => exp.mutate('json')} loading={exp.isPending && exp.variables === 'json'}><FileJson className="h-4 w-4" />Export JSON</Button></>} />
       <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_180px_150px_150px_150px_auto]">
         <div className="relative"><Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-mute" /><Input className="pl-10" placeholder="Search history…" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} aria-label="Search history" /></div>
-        <Select value={f.tool} onChange={(e) => set({ tool: e.target.value })} aria-label="Tool"><option value="">All tools</option>{TOOL_META.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>
-        <Select value={f.status} onChange={(e) => set({ status: e.target.value })} aria-label="Status"><option value="">Any status</option><option value="completed">Completed</option><option value="failed">Failed</option></Select>
+     <Select value={f.tool} onChange={(e) => set({ tool: e.target.value })} aria-label="Tool">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>All tools</option>
+  {TOOL_META.map((t) => (
+    <option key={t.id} value={t.id} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+      {t.name}
+    </option>
+  ))}
+</Select>
+      <Select value={f.status} onChange={(e) => set({ status: e.target.value })} aria-label="Status">
+  <option value="" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Any status</option>
+  <option value="completed" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Completed</option>
+  <option value="failed" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Failed</option>
+</Select>
         <Input type="date" value={f.from} onChange={(e) => set({ from: e.target.value })} aria-label="From date" /><Input type="date" value={f.to} onChange={(e) => set({ to: e.target.value })} aria-label="To date" />
         <Button variant={f.favorite ? 'primary' : 'secondary'} onClick={() => set({ favorite: !f.favorite })} aria-pressed={f.favorite}><Heart className={cn('h-4 w-4', f.favorite && 'fill-current')} />Favorites</Button>
       </div>

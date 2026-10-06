@@ -109,7 +109,15 @@ const NewReport = ({ open, onClose, onCreated }: { open: boolean; onClose: () =>
   return (
     <Modal open={open} onClose={onClose} title="Create a report" description="The more detail you give, the faster we can help.">
       <form onSubmit={(e) => { e.preventDefault(); if (valid) m.mutate(); }} className="space-y-4">
-        <Field label="Category"><Select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })}>{CATS.map(([id, l]) => <option key={id} value={id}>{l}</option>)}</Select></Field>
+        <Field label="Category">
+       <Select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })}>
+  {CATS.map(([id, l]) => (
+    <option key={id} value={id} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+      {l}
+    </option>
+  ))}
+</Select>
+          </Field>
         <Field label="Subject"><Input value={f.subject} maxLength={140} onChange={(e) => setF({ ...f, subject: e.target.value })} placeholder="Short summary" /></Field>
         <Field label="Description" hint="At least 10 characters."><Textarea value={f.description} maxLength={4000} onChange={(e) => setF({ ...f, description: e.target.value })} className="min-h-[130px]" /></Field>
         <div><input ref={fileIn} type="file" multiple accept="image/png,image/jpeg,image/webp,application/pdf" className="sr-only" onChange={(e) => setFiles([...files, ...Array.from(e.target.files || [])].slice(0, 3))} aria-label="Attachments" />

@@ -54,7 +54,17 @@ export function AdminComm() {
         <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-4">
           <Field label="Title"><Input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} maxLength={120} /></Field>
           <Field label="Message"><Textarea className="min-h-[110px]" value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} maxLength={1000} /></Field>
-          {(!edit || edit.status !== 'sent') && <div className="grid gap-4 sm:grid-cols-2"><Field label="Audience"><Select value={f.audience} onChange={(e) => setF({ ...f, audience: e.target.value })}><option value="all">Everyone</option><option value="free">Free users</option><option value="pro">Pro users</option><option value="selected">Selected users</option></Select></Field><Field label="Schedule (optional)" hint="Leave empty to send now."><Input type="datetime-local" value={f.scheduledFor} onChange={(e) => setF({ ...f, scheduledFor: e.target.value })} /></Field></div>}
+          {(!edit || edit.status !== 'sent') && <div className="grid gap-4 sm:grid-cols-2">
+     <Field label="Audience">
+  <Select value={f.audience} onChange={(e) => setF({ ...f, audience: e.target.value })}>
+    <option value="all" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Everyone</option>
+    <option value="free" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Free users</option>
+    <option value="pro" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Pro users</option>
+    <option value="selected" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Selected users</option>
+  </Select>
+</Field>
+            
+            <Field label="Schedule (optional)" hint="Leave empty to send now."><Input type="datetime-local" value={f.scheduledFor} onChange={(e) => setF({ ...f, scheduledFor: e.target.value })} /></Field></div>}
           {f.audience === 'selected' && (!edit || edit.status !== 'sent') && <div className="space-y-2"><Input value={uq} onChange={(e) => setUq(e.target.value)} placeholder="Search users to add…" aria-label="Find users" />
             {!!found.data?.length && <div className="rounded-xl border border-line bg-white/[0.03] p-1">{found.data.filter((u) => !picked.some((p) => p.id === u.id)).map((u) => <button type="button" key={u.id} onClick={() => { setPicked([...picked, u]); setUq(''); }} className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-white/[0.06]"><span>{u.name}</span><span className="text-xs text-fg-mute">{u.email}</span></button>)}</div>}
             <div className="flex flex-wrap gap-1.5">{picked.map((u) => <button type="button" key={u.id} onClick={() => setPicked(picked.filter((p) => p.id !== u.id))} className="rounded-full border border-violet-400/40 bg-violet-500/15 px-2.5 py-1 text-xs font-semibold" aria-label={`Remove ${u.name}`}>{u.name} ✕</button>)}{!picked.length && <span className="text-xs text-fg-mute">No recipients chosen yet.</span>}</div></div>}
@@ -75,7 +85,12 @@ export function AdminAnalytics() {
   const d = data;
   return (
     <div className="space-y-6">
-      <PageHeader title="Analytics" eyebrow="Admin" subtitle="Users, AI usage and revenue." actions={<><Select value={days} onChange={(e) => setDays(e.target.value)} className="!w-auto" aria-label="Range"><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option></Select><Button variant="secondary" onClick={() => pdf.mutate()} loading={pdf.isPending}><Download className="h-4 w-4" />Export PDF</Button></>} />
+      <PageHeader title="Analytics" eyebrow="Admin" subtitle="Users, AI usage and revenue." actions={<><Select value={days} onChange={(e) => setDays(e.target.value)} className="!w-auto" aria-label="Range">
+       <option value="7" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Last 7 days</option>
+<option value="30" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Last 30 days</option>
+<option value="90" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Last 90 days</option>
+        
+        </Select><Button variant="secondary" onClick={() => pdf.mutate()} loading={pdf.isPending}><Download className="h-4 w-4" />Export PDF</Button></>} />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat label="New registrations" value={d?.users.registrations ?? '–'} /><Stat label="Generations" value={d?.ai.totalGenerations ?? '–'} /><Stat label="Success rate" value={d?.ai.successRate != null ? `${d.ai.successRate}%` : '—'} tone={d?.ai.successRate != null && d.ai.successRate < 90 ? 'warn' : 'ok'} /><Stat label="Fallback rate" value={d?.ai.fallbackRate != null ? `${d.ai.fallbackRate}%` : '—'} /></div>
       <div className="grid gap-6 lg:grid-cols-2">
         <Chart title="User growth"><AreaChart data={d?.users.growth} margin={{ left: -18 }}><CartesianGrid stroke="rgba(255,255,255,.06)" vertical={false} /><XAxis dataKey="date" tickFormatter={shortDate} {...axis} interval="preserveStartEnd" /><YAxis allowDecimals={false} {...axis} /><RTooltip {...chartTip} labelFormatter={(l: unknown) => shortDate(String(l))} /><Area dataKey="registrations" name="Registrations" stroke="#8b5cf6" fill="#8b5cf633" strokeWidth={2} /></AreaChart></Chart>

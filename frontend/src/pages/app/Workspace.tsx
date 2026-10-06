@@ -135,7 +135,7 @@ export default function Workspace() {
                 <motion.button layout key={a.id} initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} whileHover={{ y: -4 }} onClick={() => { const n = new URLSearchParams(sp); n.set('artifact', a.id); if (scope === 'shared') n.set('scope', 'shared'); setSp(n); }}
                   className={cn('surface group text-left transition-colors hover:border-violet-400/30', view === 'grid' ? 'flex flex-col overflow-hidden' : 'flex items-center gap-4 p-3')}>
                   <div className={cn('relative grid shrink-0 place-items-center overflow-hidden', view === 'grid' ? 'h-36 w-full' : 'h-14 w-14 rounded-xl', KIND_TINT[a.kind])}>
-                 // In Workspace.tsx inside the mapping function
+                
 {isImg && typeof a.url === 'string' ? (
   <img src={fileUrl(a.url)} alt="" loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
 ) : (
