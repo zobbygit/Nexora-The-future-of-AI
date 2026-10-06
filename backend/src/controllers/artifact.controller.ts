@@ -107,7 +107,7 @@ export const uploadFile = asyncHandler(async (req: Request, res: Response) => {
 
 /** Streams local-disk files (development storage) after checking artifact access. */
 export const serveFile = asyncHandler(async (req: Request, res: Response) => {
-  const key = req.params[0];
+    const key = req.params.key || req.params[0];
   if (!key || key.includes('..')) throw notFound();
   const artifact = await Artifact.findOne({ 'storage.provider': 'local', 'storage.key': key });
   if (artifact) await resolveAccess(String(artifact._id), req.userId!);
