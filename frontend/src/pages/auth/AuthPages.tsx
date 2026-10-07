@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, ArrowRight, Check, Copy, Download, Eye, EyeOff, KeyRound, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -64,7 +64,34 @@ export function Register() {
   const [err, setErr] = useState('');
   const [code, setCode] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<z.infer<typeof registerSchema>>({ resolver: zodResolver(registerSchema) });
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<z.infer<typeof registerSchema>>({ resolver: zodResolver(registerSchema) });
+
+  // Live value of the password field, used to render the strength meter.
+  const password = watch('password') ?? '';
+
+  // Score 0–4. Maps to: empty · Weak · Fair · Good · Strong.
+  const strength = useMemo(() => {
+    if (!password) return 0;
+    let s = 0;
+    if (password.length >= 8) s++;
+    if (password.length >= 12) s++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) s++;
+    if (/\d/.test(password)) s++;
+    if (/[^A-Za-z0-9]/.test(password)) s++;
+    if (/^(.)\1+$/.test(password)) s = 1;                          // "aaaaaaaa"
+    if (/^(1234|abcd|qwerty|password)/i.test(password)) s = Math.min(s, 1);
+    if (password.length < 8) return 1;
+    return (s <= 2 ? 1 : s === 3 ? 2 : s === 4 ? 3 : 4) as 0 | 1 | 2 | 3 | 4;
+  }, [password]);
+
+  const strengthMeta = [
+    { label: '',        bar: 'bg-transparent',   text: 'text-fg-mute' },
+    { label: 'Weak',    bar: 'bg-rose-500',      text: 'text-rose-300' },
+    { label: 'Fair',    bar: 'bg-amber-400',     text: 'text-amber-300' },
+    { label: 'Good',    bar: 'bg-sky-400',       text: 'text-sky-300' },
+    { label: 'Strong',  bar: 'bg-emerald-400',   text: 'text-emerald-300' },
+  ][strength];
+
   const onSubmit = handleSubmit(async (v) => {
     setErr('');
     try { const { data } = await api.post('/auth/register', v); setUser(data.user); setCode(data.recoveryCode); }
@@ -85,7 +112,33 @@ export function Register() {
               <Field label="Full name" error={errors.name?.message}><Input placeholder="Alex Morgan" autoComplete="name" {...register('name')} /></Field>
               <Field label="Email" error={errors.email?.message}><Input type="email" placeholder="you@company.com" autoComplete="email" {...register('email')} /></Field>
               <Field label="Phone (optional)" error={errors.phone?.message}><Input type="tel" placeholder="+91 98765 43210" autoComplete="tel" {...register('phone')} /></Field>
-              <Field label="Password" hint="At least 8 characters with a letter and a number." error={errors.password?.message}><PasswordInput reg={register('password')} placeholder="Create a password" autoComplete="new-password" /></Field>
+
+              <Field label="Password" hint="At least 8 characters with a letter and a number." error={errors.password?.message}>
+                <PasswordInput reg={register('password')} placeholder="Create a password" autoComplete="new-password" />
+                {password.length > 0 && (
+                  <div className="mt-2 space-y-1.5" aria-live="polite">
+                    <div className="flex items-center justify-between gap-2 text-[11px]">
+                      <span className="text-fg-mute">Password strength</span>
+                      <span className={`font-bold ${strengthMeta.text}`}>{strengthMeta.label}</span>
+                    </div>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4].map((i) => (
+                        <motion.div
+                          key={i}
+                          initial={false}
+                          animate={{ opacity: strength >= i ? 1 : 0.15 }}
+                          transition={{ duration: 0.2 }}
+                          className={`h-1.5 flex-1 rounded-full ${strength >= i ? strengthMeta.bar : 'bg-white/10'}`}
+                        />
+                      ))}
+                    </div>
+                    <p className="text-[11px] leading-snug text-fg-faint">
+                      Use 8+ characters with a mix of uppercase, lowercase, numbers and a symbol.
+                    </p>
+                  </div>
+                )}
+              </Field>
+
               <Button type="submit" size="lg" className="w-full" loading={isSubmitting}>Create account <ArrowRight className="h-4 w-4" /></Button>
             </form>
           </AuthLayout>
