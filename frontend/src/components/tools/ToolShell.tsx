@@ -80,18 +80,47 @@ export const TextResult = ({ artifact, onChange, minH = 360 }: { artifact: Artif
 };
 void Pencil;
 
-export const OutputPanel = ({ state, error, status, retry, artifact, onArtifact, onDeleted, idle, label, children, editable = true, pro }: {
-  state: RunState; error: { message: string; code?: string } | null; status: string; retry: () => void; artifact: Artifact | null; onArtifact: (a: Artifact) => void; onDeleted: () => void; idle: ReactNode; label?: string; children?: ReactNode; editable?: boolean; pro?: boolean;
+export const OutputPanel = ({
+  state, error, status, retry, artifact, onArtifact, onDeleted, idle, label,
+  children, editable = true, pro,
+}: {
+  state: RunState;
+  error: { message: string; code?: string } | null;
+  status: string;
+  retry: () => void;
+  artifact: Artifact | null;
+  onArtifact: (a: Artifact) => void;
+  onDeleted: () => void;
+  idle: ReactNode;
+  label?: string;
+  children?: ReactNode;
+  editable?: boolean;
+  pro?: boolean;
 }) => (
-  <div className="space-y-4">
-    {state === 'error' && error && <ErrorBanner code={error.code} message={error.message} onRetry={error.code === 'INSUFFICIENT_CREDITS' || error.code === 'PRO_REQUIRED' ? undefined : retry} pro={error.code === 'PRO_REQUIRED' || error.code === 'INSUFFICIENT_CREDITS' || pro} />}
+  <div className="min-w-0 space-y-4">
+    {state === 'error' && error && (
+      <ErrorBanner
+        code={error.code}
+        message={error.message}
+        onRetry={error.code === 'INSUFFICIENT_CREDITS' || error.code === 'PRO_REQUIRED' ? undefined : retry}
+        pro={error.code === 'PRO_REQUIRED' || error.code === 'INSUFFICIENT_CREDITS' || pro}
+      />
+    )}
     {state === 'running' && <GeneratingCard label={label} status={status} />}
     {state === 'idle' && idle}
     {state === 'error' && !artifact && <div className="hidden" />}
     {state === 'done' && artifact && (
-      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-        <div className="surface p-5 sm:p-6">
-          {children ?? (editable && ['text', 'code', 'resume', 'response'].includes(artifact.kind) && artifact.kind !== 'resume' ? <TextResult artifact={artifact} onChange={onArtifact} /> : <ArtifactViewer artifact={artifact} />)}
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="min-w-0 space-y-4"
+      >
+        {/* md-content class scopes the markdown-aware styles below */}
+        <div className="surface md-content min-w-0 overflow-hidden p-4 sm:p-6">
+          {children ??
+            (editable && ['text', 'code', 'resume', 'response'].includes(artifact.kind) && artifact.kind !== 'resume'
+              ? <TextResult artifact={artifact} onChange={onArtifact} />
+              : <ArtifactViewer artifact={artifact} />)}
         </div>
         <ResultActions artifact={artifact} onChange={onArtifact} onDeleted={onDeleted} />
       </motion.div>

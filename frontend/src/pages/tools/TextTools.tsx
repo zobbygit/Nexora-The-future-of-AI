@@ -95,40 +95,248 @@ export function Resume() {
   };
   const Row = ({ children, onRemove }: { children: React.ReactNode; onRemove?: () => void }) => <div className="relative space-y-3 rounded-2xl border border-line bg-white/[0.025] p-4">{onRemove && <button onClick={onRemove} className="absolute right-3 top-3 text-fg-faint transition hover:text-bad" aria-label="Remove entry"><Trash2 className="h-4 w-4" /></button>}{children}</div>;
   return (
-    <ToolShell id="resume">
-      <div className="grid gap-6 xl:grid-cols-[440px_1fr]">
-        <div className="space-y-4">
-          <Tabs tabs={[{ id: 'resume', label: 'Resume builder' }, { id: 'cover', label: 'Cover letter' }]} value={mode} onChange={(v) => setMode(v as any)} />
-          <div className="surface space-y-4 p-5">
-            <Tabs tabs={[{ id: 'personal', label: 'Personal' }, { id: 'education', label: 'Education' }, { id: 'experience', label: 'Experience' }, { id: 'projects', label: 'Projects' }, { id: 'skills', label: 'Skills' }]} value={sec} onChange={setSec} />
-            {sec === 'personal' && <div className="space-y-3"><Field label="Full name"><Input value={p.name} onChange={(e) => setP({ ...p, name: e.target.value })} /></Field><div className="grid grid-cols-2 gap-3"><Field label="Email"><Input type="email" value={p.email} onChange={(e) => setP({ ...p, email: e.target.value })} /></Field><Field label="Phone"><Input value={p.phone} onChange={(e) => setP({ ...p, phone: e.target.value })} /></Field></div><div className="grid grid-cols-2 gap-3"><Field label="Location"><Input value={p.location} onChange={(e) => setP({ ...p, location: e.target.value })} /></Field><Field label="Links"><Input value={p.links} placeholder="github.com/you" onChange={(e) => setP({ ...p, links: e.target.value })} /></Field></div><Field label="Headline"><Input value={p.headline} placeholder="Full-stack developer" onChange={(e) => setP({ ...p, headline: e.target.value })} /></Field><Field label="Summary"><Textarea className="min-h-[90px]" value={p.summary} onChange={(e) => setP({ ...p, summary: e.target.value })} /></Field></div>}
-            {sec === 'education' && <div className="space-y-3">{edu.map((x, i) => <Row key={i} onRemove={edu.length > 1 ? () => setEdu(edu.filter((_, j) => j !== i)) : undefined}><Field label="School"><Input value={x.school} onChange={(e) => upd(edu, setEdu, i, 'school', e.target.value)} /></Field><div className="grid grid-cols-2 gap-3"><Field label="Degree"><Input value={x.degree} onChange={(e) => upd(edu, setEdu, i, 'degree', e.target.value)} /></Field><Field label="Period"><Input value={x.period} placeholder="2022 – 2026" onChange={(e) => upd(edu, setEdu, i, 'period', e.target.value)} /></Field></div></Row>)}<Button variant="secondary" size="sm" onClick={() => setEdu([...edu, { school: '', degree: '', period: '', details: '' }])}><Plus className="h-4 w-4" />Add education</Button></div>}
-            {sec === 'experience' && <div className="space-y-3">{exp.map((x, i) => <Row key={i} onRemove={exp.length > 1 ? () => setExp(exp.filter((_, j) => j !== i)) : undefined}><div className="grid grid-cols-2 gap-3"><Field label="Company"><Input value={x.company} onChange={(e) => upd(exp, setExp, i, 'company', e.target.value)} /></Field><Field label="Role"><Input value={x.role} onChange={(e) => upd(exp, setExp, i, 'role', e.target.value)} /></Field></div><Field label="Period"><Input value={x.period} onChange={(e) => upd(exp, setExp, i, 'period', e.target.value)} /></Field><Field label="What you did"><Textarea className="min-h-[90px]" value={x.details} onChange={(e) => upd(exp, setExp, i, 'details', e.target.value)} /></Field></Row>)}<Button variant="secondary" size="sm" onClick={() => setExp([...exp, { company: '', role: '', period: '', details: '' }])}><Plus className="h-4 w-4" />Add experience</Button></div>}
-            {sec === 'projects' && <div className="space-y-3">{proj.map((x, i) => <Row key={i} onRemove={() => setProj(proj.filter((_, j) => j !== i))}><div className="grid grid-cols-2 gap-3"><Field label="Project"><Input value={x.name} onChange={(e) => upd(proj, setProj, i, 'name', e.target.value)} /></Field><Field label="Stack"><Input value={x.stack} onChange={(e) => upd(proj, setProj, i, 'stack', e.target.value)} /></Field></div><Field label="Details"><Textarea className="min-h-[80px]" value={x.details} onChange={(e) => upd(proj, setProj, i, 'details', e.target.value)} /></Field></Row>)}<Button variant="secondary" size="sm" onClick={() => setProj([...proj, { name: '', stack: '', details: '' }])}><Plus className="h-4 w-4" />Add project</Button></div>}
-            {sec === 'skills' && <Field label="Skills" hint="Comma separated"><Textarea className="min-h-[90px]" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="React, Node.js, MongoDB, TypeScript" /></Field>}
+  <ToolShell id="resume">
+    <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[440px_1fr]">
+      {/* Left column — form */}
+      <div className="min-w-0 space-y-4">
+        {/* Top-level Resume/Cover tabs — scroll horizontally if needed */}
+        <div className="overflow-x-auto">
+          <div className="min-w-max">
+            <Tabs
+              tabs={[{ id: 'resume', label: 'Resume builder' }, { id: 'cover', label: 'Cover letter' }]}
+              value={mode}
+              onChange={(v) => setMode(v as any)}
+            />
           </div>
-          <div className="surface space-y-4 p-5">
-            <Field label="Target role"><Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Software Engineer" /></Field>
-            <Field label="Job description (optional)" hint="Used to tailor the wording."><Textarea className="min-h-[80px]" value={jd} onChange={(e) => setJd(e.target.value)} /></Field>
-            <div className="grid grid-cols-2 gap-3">
-              
-<Field label="Format">
-  <Select value={style} onChange={(e) => setStyle(e.target.value)}>
-    <option value="modern" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Modern</option>
-    <option value="classic" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Classic</option>
-    <option value="minimal" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Minimal</option>
-  </Select>
-</Field>
-              
-              <label className="mt-6 flex items-center gap-2 text-sm text-fg-soft"><input type="checkbox" checked={improve} onChange={(e) => setImprove(e.target.checked)} className="accent-violet-500" />AI improvement</label></div>
-            <Button size="lg" className="w-full" onClick={submit} loading={r.running}><Wand2 className="h-4 w-4" />Create {mode === 'resume' ? 'resume' : 'cover letter'} · {r.credits} credits</Button>
-          </div>
-          <RecentRuns tool="resume" />
         </div>
-        <OutputPanel {...r} artifact={r.artifact} onArtifact={r.setArtifact} onDeleted={() => { r.setArtifact(null); r.reset(); }} label="Building" editable={false} idle={<Placeholder icon={<FileText className="h-6 w-6" />} title="Your document preview" body="Fill in the sections and generate. You will get a clean, ATS-friendly document you can export as PDF." />} />
+
+        <div className="surface min-w-0 space-y-4 p-4 sm:p-5">
+          {/* Section tabs — horizontal scroll on mobile so all 5 are reachable */}
+          <div className="-mx-1 overflow-x-auto px-1">
+            <div className="min-w-max">
+              <Tabs
+                tabs={[
+                  { id: 'personal', label: 'Personal' },
+                  { id: 'education', label: 'Education' },
+                  { id: 'experience', label: 'Experience' },
+                  { id: 'projects', label: 'Projects' },
+                  { id: 'skills', label: 'Skills' },
+                ]}
+                value={sec}
+                onChange={setSec}
+              />
+            </div>
+          </div>
+
+          {sec === 'personal' && (
+            <div className="min-w-0 space-y-3">
+              <Field label="Full name">
+                <Input className="min-w-0 w-full" value={p.name} onChange={(e) => setP({ ...p, name: e.target.value })} />
+              </Field>
+              {/* Two-column on sm+; stacked on phones so long values have room */}
+              <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Email">
+                  <Input className="min-w-0 w-full" type="email" value={p.email} onChange={(e) => setP({ ...p, email: e.target.value })} />
+                </Field>
+                <Field label="Phone">
+                  <Input className="min-w-0 w-full" value={p.phone} onChange={(e) => setP({ ...p, phone: e.target.value })} />
+                </Field>
+              </div>
+              <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field label="Location">
+                  <Input className="min-w-0 w-full" value={p.location} onChange={(e) => setP({ ...p, location: e.target.value })} />
+                </Field>
+                <Field label="Links">
+                  <Input
+                    className="min-w-0 w-full"
+                    value={p.links}
+                    placeholder="github.com/you"
+                    onChange={(e) => setP({ ...p, links: e.target.value })}
+                  />
+                </Field>
+              </div>
+              <Field label="Headline">
+                <Input
+                  className="min-w-0 w-full"
+                  value={p.headline}
+                  placeholder="Full-stack developer"
+                  onChange={(e) => setP({ ...p, headline: e.target.value })}
+                />
+              </Field>
+              <Field label="Summary">
+                <Textarea
+                  className="min-h-[90px] min-w-0 w-full"
+                  value={p.summary}
+                  onChange={(e) => setP({ ...p, summary: e.target.value })}
+                />
+              </Field>
+            </div>
+          )}
+
+          {sec === 'education' && (
+            <div className="min-w-0 space-y-3">
+              {edu.map((x, i) => (
+                <Row key={i} onRemove={edu.length > 1 ? () => setEdu(edu.filter((_, j) => j !== i)) : undefined}>
+                  <Field label="School">
+                    <Input className="min-w-0 w-full" value={x.school} onChange={(e) => upd(edu, setEdu, i, 'school', e.target.value)} />
+                  </Field>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Field label="Degree">
+                      <Input className="min-w-0 w-full" value={x.degree} onChange={(e) => upd(edu, setEdu, i, 'degree', e.target.value)} />
+                    </Field>
+                    <Field label="Period">
+                      <Input
+                        className="min-w-0 w-full"
+                        value={x.period}
+                        placeholder="2022 – 2026"
+                        onChange={(e) => upd(edu, setEdu, i, 'period', e.target.value)}
+                      />
+                    </Field>
+                  </div>
+                </Row>
+              ))}
+              <Button variant="secondary" size="sm" onClick={() => setEdu([...edu, { school: '', degree: '', period: '', details: '' }])}>
+                <Plus className="h-4 w-4" />Add education
+              </Button>
+            </div>
+          )}
+
+          {sec === 'experience' && (
+            <div className="min-w-0 space-y-3">
+              {exp.map((x, i) => (
+                <Row key={i} onRemove={exp.length > 1 ? () => setExp(exp.filter((_, j) => j !== i)) : undefined}>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Field label="Company">
+                      <Input className="min-w-0 w-full" value={x.company} onChange={(e) => upd(exp, setExp, i, 'company', e.target.value)} />
+                    </Field>
+                    <Field label="Role">
+                      <Input className="min-w-0 w-full" value={x.role} onChange={(e) => upd(exp, setExp, i, 'role', e.target.value)} />
+                    </Field>
+                  </div>
+                  <Field label="Period">
+                    <Input className="min-w-0 w-full" value={x.period} onChange={(e) => upd(exp, setExp, i, 'period', e.target.value)} />
+                  </Field>
+                  <Field label="What you did">
+                    <Textarea
+                      className="min-h-[90px] min-w-0 w-full"
+                      value={x.details}
+                      onChange={(e) => upd(exp, setExp, i, 'details', e.target.value)}
+                    />
+                  </Field>
+                </Row>
+              ))}
+              <Button variant="secondary" size="sm" onClick={() => setExp([...exp, { company: '', role: '', period: '', details: '' }])}>
+                <Plus className="h-4 w-4" />Add experience
+              </Button>
+            </div>
+          )}
+
+          {sec === 'projects' && (
+            <div className="min-w-0 space-y-3">
+              {proj.map((x, i) => (
+                <Row key={i} onRemove={() => setProj(proj.filter((_, j) => j !== i))}>
+                  <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Field label="Project">
+                      <Input className="min-w-0 w-full" value={x.name} onChange={(e) => upd(proj, setProj, i, 'name', e.target.value)} />
+                    </Field>
+                    <Field label="Stack">
+                      <Input className="min-w-0 w-full" value={x.stack} onChange={(e) => upd(proj, setProj, i, 'stack', e.target.value)} />
+                    </Field>
+                  </div>
+                  <Field label="Details">
+                    <Textarea
+                      className="min-h-[80px] min-w-0 w-full"
+                      value={x.details}
+                      onChange={(e) => upd(proj, setProj, i, 'details', e.target.value)}
+                    />
+                  </Field>
+                </Row>
+              ))}
+              <Button variant="secondary" size="sm" onClick={() => setProj([...proj, { name: '', stack: '', details: '' }])}>
+                <Plus className="h-4 w-4" />Add project
+              </Button>
+            </div>
+          )}
+
+          {sec === 'skills' && (
+            <Field label="Skills" hint="Comma separated">
+              <Textarea
+                className="min-h-[90px] min-w-0 w-full"
+                value={skills}
+                onChange={(e) => setSkills(e.target.value)}
+                placeholder="React, Node.js, MongoDB, TypeScript"
+              />
+            </Field>
+          )}
+        </div>
+
+        <div className="surface min-w-0 space-y-4 p-4 sm:p-5">
+          <Field label="Target role">
+            <Input
+              className="min-w-0 w-full"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              placeholder="Software Engineer"
+            />
+          </Field>
+          <Field label="Job description (optional)" hint="Used to tailor the wording.">
+            <Textarea
+              className="min-h-[80px] min-w-0 w-full"
+              value={jd}
+              onChange={(e) => setJd(e.target.value)}
+            />
+          </Field>
+
+          {/* Format + AI improvement — stacked on mobile, side-by-side on sm+ */}
+          <div className="grid min-w-0 grid-cols-1 items-end gap-3 sm:grid-cols-2">
+            <Field label="Format">
+              <Select className="min-w-0 w-full" value={style} onChange={(e) => setStyle(e.target.value)}>
+                <option value="modern" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Modern</option>
+                <option value="classic" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Classic</option>
+                <option value="minimal" style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>Minimal</option>
+              </Select>
+            </Field>
+            <label className="flex min-w-0 items-center gap-2 pb-2.5 text-sm text-fg-soft">
+              <input
+                type="checkbox"
+                checked={improve}
+                onChange={(e) => setImprove(e.target.checked)}
+                className="accent-violet-500"
+              />
+              <span className="truncate">AI improvement</span>
+            </label>
+          </div>
+
+          <Button size="lg" className="w-full" onClick={submit} loading={r.running}>
+            <Wand2 className="h-4 w-4" />
+            Create {mode === 'resume' ? 'resume' : 'cover letter'} · {r.credits} credits
+          </Button>
+        </div>
+
+        <RecentRuns tool="resume" />
       </div>
-    </ToolShell>
-  );
+
+      {/* Right column — output */}
+      <div className="min-w-0">
+        <OutputPanel
+          {...r}
+          artifact={r.artifact}
+          onArtifact={r.setArtifact}
+          onDeleted={() => { r.setArtifact(null); r.reset(); }}
+          label="Building"
+          editable={false}
+          idle={
+            <Placeholder
+              icon={<FileText className="h-6 w-6" />}
+              title="Your document preview"
+              body="Fill in the sections and generate. You will get a clean, ATS-friendly document you can export as PDF."
+            />
+          }
+        />
+      </div>
+    </div>
+  </ToolShell>
+);
 }
 
 // ── Code Assistant ───────────────────────────────────────
@@ -145,25 +353,105 @@ export function CodeAssistant() {
     void r.run('/tools/code', { mode, language, code, instructions });
   };
   const lines = code.split('\n').length;
-  return (
-    <ToolShell id="code">
-      <div className="grid gap-6 xl:grid-cols-2">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">{MODES.map(([id, label, I]) => <button key={id} onClick={() => setMode(id)} aria-pressed={mode === id} className={cn('flex items-center gap-2 rounded-xl border px-3.5 py-2 text-[13px] font-bold transition', mode === id ? 'border-teal-400/60 bg-teal-400/15 text-white' : 'border-white/10 text-fg-mute hover:text-fg')}><I className="h-4 w-4" />{label}</button>)}</div>
-          <div className="overflow-hidden rounded-3xl border border-line bg-ink-900">
-            <div className="flex items-center justify-between border-b border-line bg-white/[0.03] px-4 py-2.5"><div className="flex gap-1.5"><span className="h-3 w-3 rounded-full bg-rose-400/70" /><span className="h-3 w-3 rounded-full bg-amber-400/70" /><span className="h-3 w-3 rounded-full bg-emerald-400/70" /></div>
-              <select value={language} onChange={(e) => setLanguage(e.target.value)} aria-label="Language" className="rounded-lg border border-white/10 bg-ink-700 px-2.5 py-1 font-mono text-xs outline-none">{LANGS.map((l) => <option key={l}>{l}</option>)}</select></div>
-            <div className="flex"><div aria-hidden className="select-none border-r border-line bg-white/[0.02] px-3 py-4 text-right font-mono text-xs leading-6 text-fg-faint">{Array.from({ length: Math.min(Math.max(lines, 14), 200) }, (_, i) => <div key={i}>{i + 1}</div>)}</div>
-              <textarea value={code} onChange={(e) => setCode(e.target.value)} spellCheck={false} placeholder={mode === 'generate' ? '// Optional: paste existing code for context' : '// Paste your code here'} aria-label="Code" className="min-h-[340px] w-full resize-y bg-transparent p-4 font-mono text-[13px] leading-6 outline-none placeholder:text-fg-faint" /></div>
-          </div>
-          <Field label={mode === 'generate' ? 'What should it do?' : 'Extra instructions (optional)'}><Textarea className="min-h-[80px]" value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder={mode === 'generate' ? 'A debounce hook with cancel support…' : 'Focus on performance…'} /></Field>
-          <Button size="lg" className="w-full" onClick={submit} loading={r.running}><Code2 className="h-4 w-4" />{MODES.find((m) => m[0] === mode)![1]} code · {r.credits} credits</Button>
-          <RecentRuns tool="code" />
+return (
+  <ToolShell id="code">
+    <div className="grid min-w-0 gap-6 xl:grid-cols-2">
+      <div className="min-w-0 space-y-4">
+        {/* Mode buttons — horizontal scroll on tiny screens instead of an awkward wrap */}
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          {MODES.map(([id, label, I]) => (
+            <button
+              key={id}
+              onClick={() => setMode(id)}
+              aria-pressed={mode === id}
+              className={cn(
+                'flex shrink-0 items-center gap-2 rounded-xl border px-3.5 py-2 text-[13px] font-bold transition',
+                mode === id
+                  ? 'border-teal-400/60 bg-teal-400/15 text-white'
+                  : 'border-white/10 text-fg-mute hover:text-fg',
+              )}
+            >
+              <I className="h-4 w-4" />
+              {label}
+            </button>
+          ))}
         </div>
-        <OutputPanel {...r} artifact={r.artifact} onArtifact={r.setArtifact} onDeleted={() => { r.setArtifact(null); r.reset(); }} label="Reading code" idle={<Placeholder icon={<Code2 className="h-6 w-6" />} title="Analysis appears here" body="Choose a mode, add your code and run. Code blocks in the result have one-click copy." />} />
+
+        {/* Code editor card */}
+        <div className="min-w-0 overflow-hidden rounded-3xl border border-line bg-ink-900">
+          {/* Window chrome — dots stay put, select clamps its width */}
+          <div className="flex items-center justify-between gap-2 border-b border-line bg-white/[0.03] px-3 py-2.5 sm:px-4">
+            <div className="flex shrink-0 gap-1.5">
+              <span className="h-3 w-3 rounded-full bg-rose-400/70" />
+              <span className="h-3 w-3 rounded-full bg-amber-400/70" />
+              <span className="h-3 w-3 rounded-full bg-emerald-400/70" />
+            </div>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              aria-label="Language"
+              className="min-w-0 max-w-[140px] rounded-lg border border-white/10 bg-ink-700 px-2.5 py-1 font-mono text-xs outline-none"
+            >
+              {LANGS.map((l) => <option key={l}>{l}</option>)}
+            </select>
+          </div>
+
+          {/* Line numbers + textarea */}
+          <div className="flex min-w-0">
+            <div
+              aria-hidden
+              className="hidden shrink-0 select-none border-r border-line bg-white/[0.02] px-3 py-4 text-right font-mono text-xs leading-6 text-fg-faint sm:block"
+            >
+              {Array.from({ length: Math.min(Math.max(lines, 14), 200) }, (_, i) => <div key={i}>{i + 1}</div>)}
+            </div>
+            <textarea
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              spellCheck={false}
+              placeholder={mode === 'generate' ? '// Optional: paste existing code for context' : '// Paste your code here'}
+              aria-label="Code"
+              className="min-h-[240px] min-w-0 w-full resize-y bg-transparent p-3 font-mono text-[13px] leading-6 outline-none placeholder:text-fg-faint sm:min-h-[340px] sm:p-4"
+            />
+          </div>
+        </div>
+
+        <Field label={mode === 'generate' ? 'What should it do?' : 'Extra instructions (optional)'}>
+          <Textarea
+            className="min-h-[80px]"
+            value={instructions}
+            onChange={(e) => setInstructions(e.target.value)}
+            placeholder={mode === 'generate' ? 'A debounce hook with cancel support…' : 'Focus on performance…'}
+          />
+        </Field>
+
+        <Button size="lg" className="w-full" onClick={submit} loading={r.running}>
+          <Code2 className="h-4 w-4" />
+          {MODES.find((m) => m[0] === mode)![1]} code · {r.credits} credits
+        </Button>
+
+        <RecentRuns tool="code" />
       </div>
-    </ToolShell>
-  );
+
+      {/* Output — wrapped so it can shrink below content width */}
+      <div className="min-w-0">
+        <OutputPanel
+          {...r}
+          artifact={r.artifact}
+          onArtifact={r.setArtifact}
+          onDeleted={() => { r.setArtifact(null); r.reset(); }}
+          label="Reading code"
+          idle={
+            <Placeholder
+              icon={<Code2 className="h-6 w-6" />}
+              title="Analysis appears here"
+              body="Choose a mode, add your code and run. Code blocks in the result have one-click copy."
+            />
+          }
+        />
+      </div>
+    </div>
+  </ToolShell>
+);
 }
 
 // ── AI Agent ─────────────────────────────────────────────

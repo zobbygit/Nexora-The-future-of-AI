@@ -58,6 +58,9 @@ export const createSocketServer = (server: http.Server) => {
   io.on('connection', (socket) => {
     const who = (socket.data as { who: Identity }).who;
 
+    /* ------------------------------------------------------------------ */
+    /*  ADMIN BRANCH                                                       */
+    /* ------------------------------------------------------------------ */
     if (who.kind === 'admin') {
       socket.join('admins');
       adminConnected();
@@ -86,9 +89,41 @@ export const createSocketServer = (server: http.Server) => {
         io.to(`user:${p.userId}`).emit('chat:read', { by: 'admin', at: new Date().toISOString() });
         io.to('admins').emit('chat:unread-changed', { userId: p.userId });
       });
+
+      // Admin clears a specific user's conversation — takes p.userId
+      socket.on('chat:clear', async (p: { userId?: string }, ack?: (r: unknown) => void) => {
+        if (!p?.userId || !/^[a-f\d]{24}$/i.test(p.userId)) return ack?.({ ok: false });
+        try {
+          const r = await Message.deleteMany({ conversationId: p.userId });
+          io.to(`user:${p.userId}`).emit('chat:cleared');
+          io.to('admins').emit('chat:cleared', { userId: p.userId, deleted: r.deletedCount ?? 0 });
+          ack?.({ ok: true, deleted: r.deletedCount ?? 0 });
+        } catch (e) {
+          logger.warn('admin chat clear failed', { err: (e as Error).message });
+          ack?.({ ok: false });
+        }
+      });
+      
+      socket.on('chat:delete', async (p: { userId?: string; id?: string }, ack?: (r: unknown) => void) => {
+  if (!p?.userId || !p?.id || !/^[a-f\d]{24}$/i.test(p.userId) || !/^[a-f\d]{24}$/i.test(p.id)) return ack?.({ ok: false });
+  try {
+    const r = await Message.deleteOne({ _id: p.id, conversationId: p.userId });
+    if (!r.deletedCount) return ack?.({ ok: false, error: 'Not found.' });
+    io.to(`user:${p.userId}`).emit('chat:deleted', { id: p.id });
+    io.to('admins').emit('chat:deleted', { userId: p.userId, id: p.id });
+    ack?.({ ok: true });
+  } catch (e) {
+    logger.warn('admin chat delete failed', { err: (e as Error).message });
+    ack?.({ ok: false });
+  }
+});
+
       return;
     }
 
+    /* ------------------------------------------------------------------ */
+    /*  USER BRANCH                                                        */
+    /* ------------------------------------------------------------------ */
     const uid = who.id;
     socket.join(`user:${uid}`);
     userConnected(uid);
@@ -121,6 +156,41 @@ export const createSocketServer = (server: http.Server) => {
       await Message.updateMany({ conversationId: uid, sender: 'admin', readAt: { $exists: false } }, { readAt: new Date() });
       io.to('admins').emit('chat:read', { userId: uid, by: 'user', at: new Date().toISOString() });
     });
+
+    // User clears their OWN conversation — no p.userId, uses uid
+    let lastClear = 0;
+    socket.on('chat:clear', async (ack?: (r: unknown) => void) => {
+      try {
+        const now = Date.now();
+        if (now - lastClear < 5000) return ack?.({ ok: false, error: 'Slow down.' });
+        lastClear = now;
+
+        const r = await Message.deleteMany({ conversationId: uid });
+        io.to(`user:${uid}`).emit('chat:cleared');
+        io.to('admins').emit('chat:cleared', { userId: uid, deleted: r.deletedCount ?? 0 });
+        ack?.({ ok: true, deleted: r.deletedCount ?? 0 });
+      } catch (e) {
+        logger.warn('chat clear failed', { err: (e as Error).message });
+        ack?.({ ok: false });
+      }
+    });
+
+    // User deletes a single one of their own messages.
+socket.on('chat:delete', async (p: { id?: string }, ack?: (r: unknown) => void) => {
+  if (!p?.id || !/^[a-f\d]{24}$/i.test(p.id)) return ack?.({ ok: false });
+  try {
+    // Scope by conversationId so a user can only delete their own messages.
+    const r = await Message.deleteOne({ _id: p.id, conversationId: uid });
+    if (!r.deletedCount) return ack?.({ ok: false, error: 'Not found.' });
+    io.to(`user:${uid}`).emit('chat:deleted', { id: p.id });
+    io.to('admins').emit('chat:deleted', { userId: uid, id: p.id });
+    ack?.({ ok: true });
+  } catch (e) {
+    logger.warn('chat delete failed', { err: (e as Error).message });
+    ack?.({ ok: false });
+  }
+});
+
   });
 
   return io;

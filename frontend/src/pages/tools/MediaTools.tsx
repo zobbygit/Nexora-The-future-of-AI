@@ -21,25 +21,76 @@ export function TextToSpeech() {
   const [speed, setSpeed] = useState(1);
   const submit = () => { if (text.trim().length < 2) return toast.error('Add some text', 'Type what you want spoken.'); void r.run('/tools/tts', { text, voice, speed }); };
   return (
-    <ToolShell id="tts">
-      <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
-        <div className="space-y-4">
-          <div className="surface p-5 sm:p-6"><Field label="Text"><Textarea className="min-h-[260px] text-[15px]" value={text} onChange={(e) => setText(e.target.value)} placeholder="Type or paste what you want spoken…" maxLength={3000} /></Field><p className="mt-2 text-right text-xs text-fg-mute">{text.length}/3000</p></div>
-          <RecentRuns tool="tts" />
+  <ToolShell id="tts">
+    <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[1fr_420px]">
+      {/* Left column — text + recent */}
+      <div className="min-w-0 space-y-4">
+        <div className="surface min-w-0 p-4 sm:p-6">
+          <Field label="Text">
+            <Textarea
+              className="min-h-[220px] min-w-0 w-full text-[15px] sm:min-h-[260px]"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Type or paste what you want spoken…"
+              maxLength={3000}
+            />
+          </Field>
+          <p className="mt-2 text-right text-xs text-fg-mute">{text.length}/3000</p>
         </div>
-        <div className="space-y-4">
-          <div className="surface space-y-5 p-5 sm:p-6">
-            <Field label="Voice"><Select value={voice} onChange={(e) => setVoice(e.target.value)}>{VOICES.map(([id, l]) => <option key={id} value={id}>{l}</option>)}</Select></Field>
-            <Field label={`Speed · ${speed.toFixed(1)}×`} hint="Playback speed is applied in the player."><input type="range" min={0.5} max={2} step={0.1} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="w-full accent-violet-500" aria-label="Speed" /></Field>
-            <Button size="lg" className="w-full" onClick={submit} loading={r.running}><Volume2 className="h-4 w-4" />Generate speech · {r.credits} credits</Button>
-          </div>
-          <OutputPanel {...r} artifact={r.artifact} onArtifact={r.setArtifact} onDeleted={() => { r.setArtifact(null); r.reset(); }} label="Synthesizing voice" idle={<Placeholder icon={<Volume2 className="h-6 w-6" />} title="Your audio appears here" body="Generate speech to get a player with download and share." />}>
+        <RecentRuns tool="tts" />
+      </div>
+
+      {/* Right column — voice controls + output */}
+      <div className="min-w-0 space-y-4">
+        <div className="surface min-w-0 space-y-5 p-4 sm:p-6">
+          <Field label="Voice">
+            <Select value={voice} onChange={(e) => setVoice(e.target.value)} className="min-w-0 w-full">
+              {VOICES.map(([id, l]) => <option key={id} value={id}>{l}</option>)}
+            </Select>
+          </Field>
+          <Field
+            label={`Speed · ${speed.toFixed(1)}×`}
+            hint="Playback speed is applied in the player."
+          >
+            <input
+              type="range"
+              min={0.5}
+              max={2}
+              step={0.1}
+              value={speed}
+              onChange={(e) => setSpeed(Number(e.target.value))}
+              className="w-full accent-violet-500"
+              aria-label="Speed"
+            />
+          </Field>
+          <Button size="lg" className="w-full" onClick={submit} loading={r.running}>
+            <Volume2 className="h-4 w-4" />
+            Generate speech · {r.credits} credits
+          </Button>
+        </div>
+
+        <div className="min-w-0">
+          <OutputPanel
+            {...r}
+            artifact={r.artifact}
+            onArtifact={r.setArtifact}
+            onDeleted={() => { r.setArtifact(null); r.reset(); }}
+            label="Synthesizing voice"
+            idle={
+              <Placeholder
+                icon={<Volume2 className="h-6 w-6" />}
+                title="Your audio appears here"
+                body="Generate speech to get a player with download and share."
+              />
+            }
+          >
             {r.artifact && <SpeedPlayer src={fileUrl(r.artifact.url)} rate={speed} />}
           </OutputPanel>
         </div>
       </div>
-    </ToolShell>
-  );
+    </div>
+  </ToolShell>
+);
 }
 const SpeedPlayer = ({ src, rate }: { src: string; rate: number }) => {
   const a = useRef<HTMLAudioElement>(null);
@@ -225,31 +276,101 @@ export function TextToImage() {
   const [style, setStyle] = useState('none');
   const [negative, setNegative] = useState('');
   const go = () => { if (prompt.trim().length < 3) return toast.error('Describe your image', 'Add a few words about what you want to see.'); void r.run('/tools/text-to-image', { prompt, aspectRatio: ratio, style, negative: negative || undefined }); };
-  return (
-    <ToolShell id="text-to-image">
-      <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
-        <div className="space-y-4">
-          <div className="surface space-y-5 p-5 sm:p-6">
-            <Field label="Prompt"><Textarea className="min-h-[130px]" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="A quiet futuristic workspace at dusk, soft violet light, cinematic…" maxLength={1500} /></Field>
-            <div><p className="mb-2 text-[13px] font-semibold text-fg-soft">Aspect ratio</p><div className="grid grid-cols-5 gap-2">{RATIOS.map(([id, l, sz]) => <button key={id} onClick={() => setRatio(id)} aria-pressed={ratio === id} aria-label={`${l} ${id}`} className={cn('flex flex-col items-center gap-2 rounded-xl border py-3 text-[11px] font-bold transition', ratio === id ? 'border-violet-400/70 bg-violet-500/20 text-white' : 'border-white/10 text-fg-mute hover:text-fg')}><span className={cn('rounded-md border-2 border-current', sz)} />{id}</button>)}</div></div>
+ return (
+  <ToolShell id="text-to-image">
+    <div className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[420px_1fr]">
+      {/* Left column — controls + recent */}
+      <div className="min-w-0 space-y-4">
+        <div className="surface min-w-0 space-y-5 p-4 sm:p-6">
+          <Field label="Prompt">
+            <Textarea
+              className="min-h-[110px] min-w-0 w-full sm:min-h-[130px]"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="A quiet futuristic workspace at dusk, soft violet light, cinematic…"
+              maxLength={1500}
+            />
+          </Field>
 
-
-     <Field label="Style">
-  <Select value={style} onChange={(e) => setStyle(e.target.value)}>
-    {STYLES.map((s) => (
-      <option key={s} value={s} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
-        {s === 'none' ? 'None' : s === '3d' ? '3D render' : s[0].toUpperCase() + s.slice(1)}
-      </option>
-    ))}
-  </Select>
-</Field>
-            <Field label="Avoid (optional)"><Input value={negative} onChange={(e) => setNegative(e.target.value)} placeholder="text, watermark, blur" maxLength={300} /></Field>
-            <Button size="lg" className="w-full" onClick={go} loading={r.running}><ImagePlus className="h-4 w-4" />{r.state === 'done' ? 'Regenerate' : 'Generate'} · {r.credits} credits</Button>
+          <div className="min-w-0">
+            <p className="mb-2 text-[13px] font-semibold text-fg-soft">Aspect ratio</p>
+            {/* 4 across on mobile, 5 on sm+ — keeps each button tappable */}
+            <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+              {RATIOS.map(([id, l, sz]) => (
+                <button
+                  key={id}
+                  onClick={() => setRatio(id)}
+                  aria-pressed={ratio === id}
+                  aria-label={`${l} ${id}`}
+                  className={cn(
+                    'flex min-w-0 flex-col items-center gap-1.5 rounded-xl border px-1 py-3 text-[11px] font-bold transition sm:gap-2',
+                    ratio === id
+                      ? 'border-violet-400/70 bg-violet-500/20 text-white'
+                      : 'border-white/10 text-fg-mute hover:text-fg',
+                  )}
+                >
+                  <span className={cn('rounded-md border-2 border-current', sz)} />
+                  {id}
+                </button>
+              ))}
+            </div>
           </div>
-          <RecentRuns tool="text-to-image" />
+
+          <Field label="Style">
+            <Select
+              value={style}
+              onChange={(e) => setStyle(e.target.value)}
+              className="min-w-0 w-full"
+            >
+              {STYLES.map((s) => (
+                <option key={s} value={s} style={{ backgroundColor: '#1c1c1e', color: '#ffffff' }}>
+                  {s === 'none' ? 'None' : s === '3d' ? '3D render' : s[0].toUpperCase() + s.slice(1)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
+          <Field label="Avoid (optional)">
+            <Input
+              className="min-w-0 w-full"
+              value={negative}
+              onChange={(e) => setNegative(e.target.value)}
+              placeholder="text, watermark, blur"
+              maxLength={300}
+            />
+          </Field>
+
+          <Button size="lg" className="w-full" onClick={go} loading={r.running}>
+            <ImagePlus className="h-4 w-4" />
+            {r.state === 'done' ? 'Regenerate' : 'Generate'} · {r.credits} credits
+          </Button>
         </div>
-        <OutputPanel {...r} artifact={r.artifact} onArtifact={r.setArtifact} onDeleted={() => { r.setArtifact(null); r.reset(); }} label="Generating image" idle={<div className="grid min-h-[420px] place-items-center rounded-3xl border border-dashed border-white/10 bg-[radial-gradient(circle_at_30%_20%,rgba(124,92,255,0.12),transparent_60%)] p-8 text-center"><div><div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-violet-300"><Sparkles className="h-7 w-7" /></div><p className="font-bold">Your image will appear here</p><p className="mt-1.5 text-sm text-fg-mute">Pick an aspect ratio and style, then generate.</p></div></div>} />
+
+        <RecentRuns tool="text-to-image" />
       </div>
-    </ToolShell>
-  );
+
+      {/* Right column — output */}
+      <div className="min-w-0">
+        <OutputPanel
+          {...r}
+          artifact={r.artifact}
+          onArtifact={r.setArtifact}
+          onDeleted={() => { r.setArtifact(null); r.reset(); }}
+          label="Generating image"
+          idle={
+            <div className="grid min-h-[280px] place-items-center rounded-3xl border border-dashed border-white/10 bg-[radial-gradient(circle_at_30%_20%,rgba(124,92,255,0.12),transparent_60%)] p-6 text-center sm:min-h-[420px] sm:p-8">
+              <div>
+                <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-violet-300 sm:h-16 sm:w-16">
+                  <Sparkles className="h-6 w-6 sm:h-7 sm:w-7" />
+                </div>
+                <p className="font-bold">Your image will appear here</p>
+                <p className="mt-1.5 text-sm text-fg-mute">Pick an aspect ratio and style, then generate.</p>
+              </div>
+            </div>
+          }
+        />
+      </div>
+    </div>
+  </ToolShell>
+);
 }

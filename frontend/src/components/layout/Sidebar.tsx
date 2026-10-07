@@ -16,10 +16,11 @@ const Item = ({ item, collapsed, onNavigate }: { item: NavItem; collapsed: boole
   const inSection = item.children ? loc.pathname.startsWith(item.to) : false;
   const [open, setOpen] = useState(inSection);
   const link = (
-    <NavLink to={item.to} end={item.end} onClick={onNavigate}
+    <NavLink to={item.to} end={item.end} onClick={onNavigate} 
       className={({ isActive }) => cn('group relative flex h-11 items-center gap-3 rounded-2xl px-3.5 text-[14px] font-semibold outline-none transition-colors', collapsed && 'justify-center px-0', isActive ? 'text-white' : 'text-fg-mute hover:bg-white/[0.05] hover:text-fg')}>
       {({ isActive }) => (<>
-        {isActive && <motion.span layoutId={`nav-active-${collapsed}`} className="absolute inset-0 rounded-2xl border border-violet-400/25 bg-gradient-to-r from-violet-500/25 to-sky2/10" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+        {isActive && 
+        <motion.span layoutId={`nav-active-${collapsed}`} className="absolute inset-0 rounded-2xl border border-violet-400/25 bg-gradient-to-r from-violet-500/25 to-sky2/10" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
         {isActive && <motion.span layoutId="nav-bar" className="absolute -left-3 h-6 w-1 rounded-full bg-violet-400" />}
         <span className="relative grid h-5 w-5 shrink-0 place-items-center [&_svg]:h-[19px] [&_svg]:w-[19px]">{item.icon}</span>
         {!collapsed && <span className="relative flex-1 truncate">{item.label}</span>}

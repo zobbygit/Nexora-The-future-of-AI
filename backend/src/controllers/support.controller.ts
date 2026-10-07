@@ -82,3 +82,17 @@ export const chatHistory = asyncHandler(async (req, res) => {
     unread, adminOnline: isAdminOnline(), enabled: (await getSystem()).supportChatEnabled,
   });
 });
+
+export const deleteChat = asyncHandler(async (req, res) => {
+  const uid = req.userId!;
+  const result = await Message.deleteMany({ conversationId: uid });
+  // Notify admin panels so the open conversation clears in real time.
+  adminEvent('chat_deleted', { userId: uid, user: req.user.name, deleted: result.deletedCount ?? 0 });
+  res.json({ ok: true, deleted: result.deletedCount ?? 0 });
+});
+
+export const deleteMessage = asyncHandler(async (req, res) => {
+  const r = await Message.deleteOne({ _id: req.params.id, conversationId: req.userId });
+  if (!r.deletedCount) throw notFound('Message not found.');
+  res.json({ ok: true });
+});

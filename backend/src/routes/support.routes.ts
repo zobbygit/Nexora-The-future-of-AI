@@ -8,6 +8,8 @@ import { upload } from '../middleware/upload';
 export const supportRouter = Router();
 supportRouter.use(requireUser);
 supportRouter.get('/chat', s.chatHistory);
+supportRouter.delete('/chat', s.deleteChat);
+supportRouter.delete('/chat/:id', s.deleteMessage);
 supportRouter.get('/reports', s.listReports);
 supportRouter.post('/reports', uploadLimiter, upload(5, 3).array('files', 3), s.createReport);
 supportRouter.get('/reports/:id', s.getReport);

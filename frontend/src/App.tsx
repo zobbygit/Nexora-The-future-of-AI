@@ -6,6 +6,7 @@ import { Spinner, Toaster } from '@/components/ui/primitives';
 import { Button } from '@/components/ui/Button';
 import { useAuth } from '@/store/auth';
 import { toast } from '@/store/ui';
+import { ArrowLeft, HomeIcon } from 'lucide-react';
 import { closeSocket } from '@/lib/socket';
 
 const Landing = lazy(() => import('@/pages/public/Landing'));
@@ -80,7 +81,55 @@ export const RequireAdmin = ({ children }: { children: ReactNode }) => {
 };
 
 const NotFound = () => (
-  <div className="grid min-h-screen place-items-center px-6 text-center"><div><p className="text-8xl font-extrabold text-gradient">404</p><h1 className="mt-4 text-2xl font-bold">This page does not exist</h1><p className="mt-2 text-fg-mute">The link may be broken or the page may have moved.</p><Button asChild className="mt-6"><Link to="/">Back to Nexora</Link></Button></div></div>
+  <div className="grid min-h-screen place-items-center px-6 py-10 text-center">
+    <div className="relative w-full max-w-md">
+      {/* Glow behind the 404 */}
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-4 h-32 w-32 -translate-x-1/2 rounded-full bg-violet-500/25 blur-3xl" />
+
+      <div className="glass-strong relative rounded-3xl border border-white/[0.08] p-8 shadow-[0_25px_80px_-20px_rgba(0,0,0,0.85)] sm:p-10">
+        <p className="mb-2 text-[11px] font-extrabold uppercase tracking-[0.22em] text-violet-300/80">
+          Error · 404
+        </p>
+
+        <p className="bg-gradient-to-b from-white via-white/90 to-white/40 bg-clip-text text-7xl font-black leading-none tracking-tighter text-transparent sm:text-8xl">
+          404
+        </p>
+
+        <h1 className="mt-3 bg-gradient-to-b from-white to-white/70 bg-clip-text text-2xl font-extrabold tracking-tight text-transparent">
+          This page does not exist
+        </h1>
+
+        <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-fg-mute">
+          The link may be broken, or the page may have moved. Let's get you back on track.
+        </p>
+
+        <div className="mt-6 flex flex-col justify-center gap-2.5 sm:flex-row">
+          <Button asChild size="lg" className="shadow-[0_10px_30px_-10px_rgba(124,92,255,0.85)]">
+            <Link to="/">
+              <HomeIcon className="h-4 w-4" />
+              Back to Nexora
+            </Link>
+          </Button>
+          <Button variant="secondary" size="lg" onClick={() => history.back()}>
+            <ArrowLeft className="h-4 w-4" />
+            Go back
+          </Button>
+        </div>
+      </div>
+
+      <p className="mt-5 text-xs text-fg-faint">
+        Lost? Try the{' '}
+        <Link to="/app" className="font-semibold text-violet-300 underline-offset-4 hover:underline">
+          dashboard
+        </Link>{' '}
+        or contact{' '}
+        <Link to="/app/support" className="font-semibold text-violet-300 underline-offset-4 hover:underline">
+          support
+        </Link>
+        .
+      </p>
+    </div>
+  </div>
 );
 
 const Home = () => {
