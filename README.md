@@ -82,13 +82,21 @@ npm run build
 ```
 Backend tests cover provider routing/fallback/circuit breaker, credit reservation & daily reset, auth/session/admin separation, Pro enforcement, CSRF, Stripe webhook signature/idempotency/upgrade/downgrade, SSRF, file sniffing, sanitization, RAG chunking/ranking, data analysis and PDF export. They run **without** a database or provider keys. Frontend tests cover route guards, login/register/recovery, onboarding, the intro sequence, pagination, tabs, dialogs and stores.
 
-## Deploy
+## Deploy (Render API + Vercel web)
 
-1. **MongoDB Atlas** → set `MONGODB_URI`.
-2. **Render**: create a Web Service from `render.yaml` (root `backend`). Add the secrets. Copy the Deploy Hook URL into the GitHub secret `RENDER_DEPLOY_HOOK`.
-3. **Stripe**: add a webhook endpoint `https://<api>/api/billing/webhook` with the events above; put the signing secret in `STRIPE_WEBHOOK_SECRET`.
-4. **Vercel**: import the repo with root `frontend`, set `VITE_API_URL`. Add `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` as GitHub secrets for the gated deploy workflow.
-5. Set `CLIENT_URL` on the API to the Vercel URL so CORS and cookies work.
+**Render (API)** — env vars: `MONGODB_URI`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, provider keys, `STRIPE_*`, `CLOUDINARY_*`, and
+- `CLIENT_URL=https://<your-app>.vercel.app` (exact origin, no trailing slash — it is also where Stripe sends people back)
+- `CORS_EXTRA_ORIGINS=http://localhost:5173` (optional, lets your local frontend talk to the deployed API)
+- `COOKIE_DOMAIN` and `COOKIE_SAMESITE`: **leave both empty** on `*.vercel.app` + `*.onrender.com` (cookies are then `SameSite=None; Secure`, which cross-site apps require).
+
+**Vercel (web)** — import the repo, **Root Directory = `frontend`**, Framework = Vite, then set
+- `VITE_API_URL=https://<your-render-service>.onrender.com` (no trailing slash). The build fails with a clear message if this is missing.
+
+Then: open the site → register → onboarding → dashboard; hard-refresh a deep page (it must stay put); Billing → upgrade with `4242 4242 4242 4242` and confirm the plan flips to Pro.
+
+**Browser caveat.** With the free domains above, the API is a *third-party* site to the app. Chrome/Edge/Firefox work; Safari/iOS and private windows block third-party cookies, so sign-in will not stick there. The fix is a custom domain: put the web app on `app.yourdomain.com` and the API on `api.yourdomain.com`, then set on Render `COOKIE_DOMAIN=.yourdomain.com`, `COOKIE_SAMESITE=lax`, `CLIENT_URL=https://app.yourdomain.com`. Cookies become first-party and work everywhere.
+
+Preview deployments (`*-git-*.vercel.app`) are different origins; add the specific URL to `CORS_EXTRA_ORIGINS` if you need to test one. (Wildcarding `*.vercel.app` would let any Vercel site call your API with your users' cookies, so it is deliberately not supported.)
 
 ## Known limits (honest list)
 

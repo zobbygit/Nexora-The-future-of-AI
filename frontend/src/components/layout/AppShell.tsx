@@ -6,7 +6,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-do
 import { Button } from '@/components/ui/Button';
 import { Skeleton, TooltipProvider } from '@/components/ui/primitives';
 import { useBootstrap, useRealtime } from '@/hooks/useApp';
-import { api } from '@/lib/api';
+import { api, fileUrl } from '@/lib/api';
 import { CATEGORIES, TOOL_META, toolPath } from '@/lib/tools';
 import type { NotificationItem } from '@/lib/types';
 import { cn, formatCountdown, formatNumber, timeAgo } from '@/lib/utils';
@@ -15,7 +15,7 @@ import { useUi } from '@/store/ui';
 import { Sidebar, type NavItem } from './Sidebar';
 
 export const Avatar = ({ name, url, size = 36 }: { name?: string; url?: string; size?: number }) => (
-  url ? <img src={url.startsWith('http') ? url : url} alt={name || 'Avatar'} style={{ width: size, height: size }} className="rounded-full object-cover" />
+  url ? <img src={fileUrl(url)} alt={name || 'Avatar'} style={{ width: size, height: size }} className="rounded-full object-cover" />
     : <span style={{ width: size, height: size, fontSize: size * 0.4 }} className="grid shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-sky2 font-bold">{(name || '?')[0]?.toUpperCase()}</span>
 );
 

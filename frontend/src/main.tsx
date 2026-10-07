@@ -1,6 +1,7 @@
 import { Component, StrictMode, type ErrorInfo, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { API_URL } from '@/lib/env';
 import './index.css';
 
 class Boundary extends Component<{ children: ReactNode }, { error: Error | null }> {
@@ -17,5 +18,8 @@ class Boundary extends Component<{ children: ReactNode }, { error: Error | null 
     );
   }
 }
+
+// Render's free tier sleeps when idle. Poke /health immediately so the API is waking while the intro plays.
+if (API_URL) void fetch(`${API_URL}/health`, { mode: 'no-cors', cache: 'no-store' }).catch(() => undefined);
 
 createRoot(document.getElementById('root')!).render(<StrictMode><Boundary><App /></Boundary></StrictMode>);

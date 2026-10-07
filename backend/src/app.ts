@@ -35,7 +35,7 @@ export const createApp = (): Express => {
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' }, hsts: isProd ? undefined : false }));
   app.use(cors({
     origin: (origin, cb) => (!origin || allowedOrigins().includes(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'))),
-    credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], allowedHeaders: ['Content-Type', 'X-Nexora-Client'],
+    credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], allowedHeaders: ['Content-Type', 'X-Nexora-Client'], maxAge: 7200,
   }));
   app.use(compression());
 
