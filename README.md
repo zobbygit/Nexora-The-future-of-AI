@@ -1,5 +1,33 @@
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div align="center">
 
 <img src="frontend/public/favicon.svg" width="84" alt="Nexora logo" />
@@ -665,7 +693,7 @@ Socket.IO authenticates with a short-lived ticket (cookie fallback).
 ### 1. Clone
 
 ```bash
-git clone https://github.com/<your-username>/nexora.git
+git clone https://github.com/zobbygit/Nexora-The-future-of-AI.git
 cd nexora
 ```
 
