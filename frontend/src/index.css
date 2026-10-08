@@ -143,3 +143,24 @@ body {
 .md-content ul,
 .md-content ol { margin: 0.5rem 0; padding-left: 1.25rem; }
 .md-content li { margin: 0.25rem 0; }
+
+
+@keyframes nexora-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.nexora-marquee {
+  animation: nexora-marquee-scroll 60s linear infinite;
+  will-change: transform;
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .nexora-marquee {
+    animation: none;
+    transform: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+}

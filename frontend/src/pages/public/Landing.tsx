@@ -322,16 +322,128 @@ const Plans = () => {
   );
 };
 
+// const Testimonials = () => (
+//   <section id="testimonials" className="mx-auto mt-32 max-w-7xl scroll-mt-24 px-5 sm:px-8">
+//     <SectionHead eyebrow="Testimonials" title="Made for people who ship" />
+//     <div className="mt-12 grid gap-4 md:grid-cols-3">
+//       {[['I replaced four separate subscriptions. The PDF assistant alone saves me an hour every day.', 'Ananya R.', 'Product manager'], ['The code assistant explains, debugs and refactors in one place. The workspace keeps everything tidy.', 'Rohan M.', 'Full-stack developer'], ['Sharing a draft as editor and watching my editor tweak it live felt like magic.', 'Sofia L.', 'Content lead']].map(([q, n, r], i) => (
+//         <Reveal key={n} delay={i * 0.1}><Tilt className="surface h-full p-6"><p className="text-[15px] leading-7 text-fg-soft">“{q}”</p><div className="mt-6 flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-sky2 font-bold">{n[0]}</span><div><p className="text-sm font-bold">{n}</p><p className="text-xs text-fg-mute">{r}</p></div></div></Tilt></Reveal>
+//       ))}
+//     </div>
+//   </section>
+// );
+
+const TESTIMONIALS: [string, string, string][] = [
+  // Original 3
+  [
+    'I replaced four separate subscriptions. The PDF assistant alone saves me an hour every day.',
+    'Ananya R.',
+    'Product manager',
+  ],
+  [
+    'The code assistant explains, debugs and refactors in one place. The workspace keeps everything tidy.',
+    'Rohan M.',
+    'Full-stack developer',
+  ],
+  [
+    'Sharing a draft as editor and watching my editor tweak it live felt like magic.',
+    'Sofia L.',
+    'Content lead',
+  ],
+  // 8 new dummy testimonials
+  [
+    'The AI Agent planned my entire research workflow and cited sources from the PDF I attached.',
+    'Karan T.',
+    'Research analyst',
+  ],
+  [
+    'Background Remover gave me studio-quality cutouts in seconds. My design team stopped using the old tool.',
+    'Meera J.',
+    'Graphic designer',
+  ],
+  [
+    'Billing is honest — I never get charged for a failed run. That alone earned my trust.',
+    'Daniel O.',
+    'Startup founder',
+  ],
+  [
+    'I record client calls, drop the audio in, and get a timestamped transcript before I finish my coffee.',
+    'Priya S.',
+    'Sales consultant',
+  ],
+  [
+    'The data analyzer found an outlier in my CSV that would have taken me an afternoon in a spreadsheet.',
+    'Arjun K.',
+    'Data scientist',
+  ],
+  [
+    'Résumé AI rewrote my summary for an ATS and I got three callbacks the same week.',
+    'Hannah W.',
+    'Marketing lead',
+  ],
+  [
+    'The admin console is honestly better than tools I pay ten times more for. Audit log is a lifesaver.',
+    'Vikram N.',
+    'IT administrator',
+  ],
+];
+
+const TestimonialCard = ({
+  quote,
+  name,
+  role,
+}: {
+  quote: string;
+  name: string;
+  role: string;
+}) => (
+  <Tilt className="surface w-[340px] shrink-0 p-6 sm:w-[380px]">
+    <p className="text-[15px] leading-7 text-fg-soft">“{quote}”</p>
+    <div className="mt-6 flex items-center gap-3">
+      <span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-sky2 font-bold">
+        {name[0]}
+      </span>
+      <div>
+        <p className="text-sm font-bold">{name}</p>
+        <p className="text-xs text-fg-mute">{role}</p>
+      </div>
+    </div>
+  </Tilt>
+);
+
 const Testimonials = () => (
-  <section id="testimonials" className="mx-auto mt-32 max-w-7xl scroll-mt-24 px-5 sm:px-8">
+  <section
+    id="testimonials"
+    className="mx-auto mt-32 max-w-7xl scroll-mt-24 overflow-hidden px-5 sm:px-8"
+  >
     <SectionHead eyebrow="Testimonials" title="Made for people who ship" />
-    <div className="mt-12 grid gap-4 md:grid-cols-3">
-      {[['I replaced four separate subscriptions. The PDF assistant alone saves me an hour every day.', 'Ananya R.', 'Product manager'], ['The code assistant explains, debugs and refactors in one place. The workspace keeps everything tidy.', 'Rohan M.', 'Full-stack developer'], ['Sharing a draft as editor and watching my editor tweak it live felt like magic.', 'Sofia L.', 'Content lead']].map(([q, n, r], i) => (
-        <Reveal key={n} delay={i * 0.1}><Tilt className="surface h-full p-6"><p className="text-[15px] leading-7 text-fg-soft">“{q}”</p><div className="mt-6 flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-violet-500 to-sky2 font-bold">{n[0]}</span><div><p className="text-sm font-bold">{n}</p><p className="text-xs text-fg-mute">{r}</p></div></div></Tilt></Reveal>
-      ))}
+
+    {/* Marquee viewport with fade edges */}
+    <div className="group relative mt-12 overflow-hidden">
+      {/* left fade */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-ink to-transparent sm:w-24" />
+      {/* right fade */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-ink to-transparent sm:w-24" />
+
+      {/* Track: two identical halves so the loop is seamless */}
+      <div className="nexora-marquee flex w-max gap-4 group-hover:[animation-play-state:paused]">
+        {/* Half 1 */}
+        <div className="flex gap-4 pr-4">
+          {TESTIMONIALS.map(([q, n, r], i) => (
+            <TestimonialCard key={`a-${n}-${i}`} quote={q} name={n} role={r} />
+          ))}
+        </div>
+        {/* Half 2 — duplicate, aria-hidden so screen readers don't double-announce */}
+        <div className="flex gap-4 pr-4" aria-hidden="true">
+          {TESTIMONIALS.map(([q, n, r], i) => (
+            <TestimonialCard key={`b-${n}-${i}`} quote={q} name={n} role={r} />
+          ))}
+        </div>
+      </div>
     </div>
   </section>
 );
+
 
 const FAQS = [['What do I get on the Free plan?', 'Five tools — AI Writer, Resume & Cover, Code Assistant, PDF AI and AI Agent — with 20 credits that reset every day.'], ['What happens if a provider is down?', 'Nexora automatically retries with a fallback provider. It counts as one generation and one charge, and if everything fails you are not charged at all.'], ['How does billing work?', 'Pro is ₹400 per month via Stripe. You can cancel any time from Billing and keep access until the period ends.'], ['Can I share what I create?', 'Yes. Share any artifact with another Nexora user as a viewer or an editor, and change or revoke access whenever you like.'], ['How do I recover my account?', 'When you sign up we show you a one-time recovery code. Use it with your email to reset your password.']];
 const Faq = () => {
