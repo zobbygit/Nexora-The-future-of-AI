@@ -265,21 +265,21 @@ Global search in the top bar finds users, generations, reports, audit entries an
 
 ```mermaid
 flowchart LR
-  subgraph Client["Browser"]
-    SPA["React SPA<br/>Vite · Tailwind · Framer Motion<br/>TanStack Query · Zustand"]
+  subgraph Client ["Browser"]
+    SPA["React SPA\nVite · Tailwind · Framer Motion\nTanStack Query · Zustand"]
   end
-  subgraph Vercel["Vercel"]
-    STATIC["Static hosting<br/>SPA rewrite + security headers"]
+  subgraph Vercel ["Vercel"]
+    STATIC["Static hosting\nSPA rewrite + security headers"]
   end
-  subgraph Render["Render"]
-    API["Express API (TypeScript)<br/>REST · validation · rate limits"]
-    WS["Socket.IO<br/>chat · presence · notifications"]
-    ROUTER["AI provider router<br/>live model discovery · fallback"]
+  subgraph Render ["Render"]
+    API["Express API (TypeScript)\nREST · validation · rate limits"]
+    WS["Socket.IO\nchat · presence · notifications"]
+    ROUTER["AI provider router\nlive model discovery · fallback"]
   end
-  DB[("MongoDB Atlas<br/>18 collections")]
-  STRIPE["Stripe<br/>Checkout · webhooks"]
-  CLD["Cloudinary<br/>binary files"]
-  subgraph PROV["AI providers"]
+  DB[("MongoDB Atlas\n18 collections")]
+  STRIPE["Stripe\nCheckout · webhooks"]
+  CLD["Cloudinary\nbinary files"]
+  subgraph PROV ["AI providers"]
     OR["OpenRouter"]
     GQ["Groq"]
     CF["Cloudflare Workers AI"]
@@ -1008,7 +1008,15 @@ The suites run with **no database and no API keys** — models and provider HTTP
 ```mermaid
 flowchart LR
   PR["Push / pull request"] --> CI
-  subgraph CI["CI workflow"]
+  subgraph CI ["CI workflow"]
     direction TB
-    B["Backend<br/>lint · typecheck · test + coverage · build · npm audit"]
-    F["Frontend<br/>lint · typecheck · test · build · npm audit
+    B["Backend\nlint · typecheck · test + coverage · build · npm audit"]
+    F["Frontend\nlint · typecheck · test · build · npm audit"]
+    S["Secret scan\ngitleaks"]
+  end
+  CI -- "green on main" --> D
+  subgraph D ["Deploy workflow"]
+    direction TB
+    R["Render deploy hook"]
+    V["Vercel build + deploy"]
+  end
