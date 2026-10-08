@@ -288,15 +288,15 @@ flowchart LR
   end
   STATIC --> SPA
   SPA -- "HTTPS + httpOnly cookies" --> API
-  SPA <-- "ticket-authenticated" --> WS
+  SPA <--> |"ticket-authenticated"| WS
   API --> DB
   WS --> DB
   API --> ROUTER
   ROUTER --> OR & GQ & CF & HF & CD
   API --> CLD
-  API <-- "signed webhooks" --> STRIPE
+  API <--> |"signed webhooks"| STRIPE
 
----
+
 ```
 
 ### How a generation works
