@@ -1,33 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div align="center">
 
 <img src="frontend/public/favicon.svg" width="84" alt="Nexora logo" />
@@ -114,40 +86,35 @@ Behind the scenes Nexora is **provider-agnostic**: requests are routed across **
 | 🔐 **Security-first** | httpOnly cookies, token versioning, lockout, CSRF header, SSRF guard, magic-byte uploads, prompt-injection fencing, audit log |
 | ✅ **177 automated tests** | 143 backend + 34 frontend, running with no database and no API keys |
 
-## Screenshots
+## Pages
 
-> Rendered from the production build with sample data.
+> The production build ships with the following pages and screens, each captured at 1440 × 900 unless noted.
 
-<table>
-<tr>
-<td width="50%"><img src="docs/screenshots/intro.png" alt="Cinematic intro" /><br/><sub><b>Cinematic intro</b> — first visit only, skippable</sub></td>
-<td width="50%"><img src="docs/screenshots/onboarding.png" alt="Onboarding" /><br/><sub><b>Onboarding</b> — three questions, personalised summary</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/dashboard.png" alt="Dashboard" /><br/><sub><b>Dashboard</b> — credits, quick tools, activity, usage</sub></td>
-<td><img src="docs/screenshots/tools.png" alt="AI Tools" /><br/><sub><b>AI Tools</b> — categories, search, plan badges</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/writer.png" alt="AI Writer" /><br/><sub><b>AI Writer</b> — editable result, copy, PDF, share, favorite</sub></td>
-<td><img src="docs/screenshots/locked.png" alt="Pro-locked tool" /><br/><sub><b>Pro gate</b> — real tool page behind an upgrade card</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/billing.png" alt="Billing" /><br/><sub><b>Billing</b> — plan, credits, history, Stripe</sub></td>
-<td><img src="docs/screenshots/notifications.png" alt="Notifications" /><br/><sub><b>Notifications</b> — real-time, unread tracking</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/admin-dashboard.png" alt="Admin dashboard" /><br/><sub><b>Admin dashboard</b> — metrics, 14-day trend, provider health</sub></td>
-<td><img src="docs/screenshots/admin-ai.png" alt="Admin AI management" /><br/><sub><b>AI management</b> — success rate, latency, fallbacks</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/admin-users.png" alt="Admin users" /><br/><sub><b>Users</b> — search, plan, status, presence</sub></td>
-<td align="center"><img src="docs/screenshots/mobile-dashboard.png" alt="Mobile dashboard" width="220" /><br/><sub><b>Mobile</b> — responsive down to 360 px</sub></td>
-</tr>
-<tr>
-<td><img src="docs/screenshots/landing-tools.png" alt="Landing: tools" /><br/><sub><b>Landing</b> — tool showcase</sub></td>
-<td><img src="docs/screenshots/landing-pricing.png" alt="Landing: pricing" /><br/><sub><b>Landing</b> — Free vs Pro</sub></td>
-</tr>
-</table>
+| Page | What it shows |
+|---|---|
+| **Cinematic intro** | First visit only, skippable — ambient light, the logo draws itself, a progress line with status text, then two dark curtains part on a seam of light. |
+| **Onboarding** | Three animated questions followed by a personalised summary and recommended tools. Never shown again once finished. |
+| **Dashboard** | Credit balance and reset date, quick-access tools, recent activity, and a 14-day usage chart. |
+| **AI Tools** | All 13 tools grouped by category with search and Free / Pro badges. |
+| **AI Writer** | Editable result pane with copy, PDF export, share and favourite actions. |
+| **Pro gate** | A real Pro tool page rendered behind an upgrade card — same layout, locked content. |
+| **Billing** | Current plan, credit meter, renewal date, Stripe upgrade / cancel / resume, plus credit, subscription and payment histories. |
+| **Notifications** | Full-page view with an unread filter, mark-read, mark-all-read and delete; new items arrive live over the socket. |
+| **Admin dashboard** | Total / Free / Pro users, generations today, credits consumed, revenue, active providers, failed requests, open reports, a 14-day generation trend and live provider health. |
+| **Admin — AI management** | Per-provider status, success rate, average latency, fallback counts, last error, per-tool usage, and every generation with its provider attempt log. |
+| **Admin — Users** | Search and filter by plan and status; per-user usage, credit history, billing, reports and collaboration; credits, plan, activation and deletion controls. |
+| **Mobile dashboard** | Fully responsive down to 360 px — collapsible sidebar becomes a drawer, tables become cards. |
+| **Landing — tool showcase** | One of the 15 landing sections; lists every tool with a short description. |
+| **Landing — pricing** | Free vs Pro comparison with the ₹400/month Stripe checkout entry point. |
+
+---
+
+## Pages at a glance
+
+- **Public** — Landing · Intro · Login · Register · Forgot password · Reset password
+- **Onboarding** — Three-step questionnaire (once, after sign-up)
+- **App** — Dashboard · AI Tools · each of the 13 tool pages · Workspace · History · Billing · Collaboration · Notifications · Support · Profile
+- **Admin** — `/admin/login` · Dashboard · Users · AI Management · Billing & Plans · Support · Communication · Analytics · System & Audit
 
 ---
 
